@@ -1,0 +1,315 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../simpla-element-behavior/simpla-element-behavior.html">
+
+<dom-module id="simpla-collection">
+  <template>
+    <style>
+      :host, *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      :host {
+        display: block;
+        overflow: hidden;
+        -moz-osx-font-smoothing: grayscale;
+         -webkit-font-smoothing: antialiased;
+                 font-smoothing: antialiased;
+      }
+
+      .wrapper {
+        position: relative;
+        min-height: 100px;
+      }
+
+      /**
+       * Edit button
+       */
+      .edit {
+        @apply --simpla-button;
+        display: flex;
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        align-items: center;
+        background: var(--simpla-grey-700);
+        color: white;
+        z-index: var(--simpla-on-top);
+        opacity: 0;
+        /*transform: translateY(-10%);
+        transition: opacity ease,
+                    transform var(--simpla-easing-standard);
+        transition-duration: 60ms;*/
+      }
+
+      :host(:hover) .edit {
+        opacity: 1;
+        /*transform: translateY(0);
+        transition-duration: 120ms;*/
+      }
+
+      .edit::before {
+        @apply --simpla-button-highlight;
+      }
+
+      .edit:active::before {
+        @apply --simpla-button-highlight-active;
+      }
+
+      .edit__icon {
+        --iron-icon-width: 1em;
+        --iron-icon-height: 1em;
+        margin-right: 0.5em;
+      }
+
+      /**
+       * Empty content placeholder
+       */
+      .placeholder {
+        position: absolute;
+        display: flex;
+        top: 0;
+        left: 0;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        background: var(--simpla-grey-100);
+        cursor: pointer;
+      }
+
+      .placeholder__label {
+        @apply --simpla-button;
+        display: flex;
+        align-items: center;
+        border-radius: 999px;
+        padding-left: 1.25em;
+        padding-right: 1.25em;
+        background: var(--simpla-grey-300);
+        color: var(--simpla-grey-700);
+      }
+
+      .placeholder__label__icon {
+        --iron-icon-width: 1.1em;
+        --iron-icon-height: 1.1em;
+        margin-right: 0.3em;
+      }
+
+      /* Patch hidden prop in Chrome and IE */
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+
+    <simpla-collection-editor
+      items="{{items}}"
+      as="[[as]]"
+      active="{{active}}">
+    </simpla-collection-editor>
+
+    <div class="wrapper">
+
+      <!--
+        All components required by this DOM are
+        imported by simpla-collection-editor
+      -->
+      <template is="dom-if" if="[[editable]]">
+        <button class="edit" on-tap="_edit" hidden$="[[_hideEdit(items.*, active)]]">
+          <iron-icon
+            class="edit__icon"
+            icon="simpla-collection:mode-edit">
+          </iron-icon>
+          [[as]]s
+        </button>
+
+        <div class="placeholder" on-tap="add" hidden$="[[!_showPlaceholder(items.*)]]" >
+          <div class="placeholder__label">
+            <iron-icon
+              class="placeholder__label__icon"
+              icon="simpla-collection:add">
+            </iron-icon>
+            add [[as]]
+          </div>
+        </div>
+      </template>
+
+      <slot></slot>
+
+    </div>
+
+  </template>
+
+  <script>
+    const EDITOR_IMPORT = 'simpla-collection-editor.html';
+
+    function generateId() {
+      return Math.random().toString(36).substr(-4);
+    }
+
+    Polymer({
+      is: 'simpla-collection',
+
+      properties: {
+
+        /**
+         * Items in the collection
+         * @type {Array}
+         */
+        items: {
+          type: Array,
+          value: []
+        },
+
+        /**
+         * Item name to use throughout
+         * @type {String}
+         */
+        as: {
+          type: String,
+          value: 'item'
+        },
+
+        /**
+         * Whether collection editor is open
+         * @type {Boolean}
+         */
+        active: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+
+        /**
+         * Whether collection is editable
+         * @type {Boolean}
+         */
+        editable: {
+          type: Boolean,
+          observer: '_importEditor',
+          notify: true,
+          value: false
+        }
+
+      },
+
+      observers: [
+        '_render(items.*)'
+      ],
+
+      behaviors: [ SimplaBehaviors.Element ],
+
+      /**
+       * Setup Simpla on element creation
+       * @return {undefined}
+       */
+      created() {
+        this.setupSimpla({
+          type: 'Collection',
+          dataProperties: [ 'items' ]
+        });
+      },
+
+      /**
+       * Add an item to the collection
+       * @return {undefined}
+       */
+      add() {
+        this.push('items', generateId());
+      },
+
+      /**
+       * Remove an item from the collection,
+       * including any Simpla data associated with it
+       * @param  {String} id Hash ID of the item to remove
+       * @return {undefined}
+       */
+      remove(id) {
+        let path = `${this.path}/${id}`,
+            item = this.items.find(id),
+            itemIndex = this.items.indexOf(id);
+
+        Simpla.remove(path);
+        this.splice('items', itemIndex, 1);
+      },
+
+      /**
+       * Swap the position of two items in the collection
+       * @param  {String} a Hash ID of the first item
+       * @param  {String} b Hash ID of the second item
+       * @return {undefined}
+       */
+      swap(a, b) {
+        let { items } = this,
+            newItems = items.slice(),
+            aIndex = items.indexOf(a),
+            bIndex = items.indexOf(b);
+
+        newItems[bIndex] = items[aIndex];
+        newItems[aIndex] = items[bIndex];
+
+        this.items = newItems;
+      },
+
+      /**
+       * Render the collection
+       * @return {undefined}
+       */
+      _render() {
+        let template = Polymer.dom(this).querySelector('template'),
+            items = this.items;
+
+        const replaceKeyWith = (fragment, hash) => {
+          let attributes = [ 'path', 'sid', 'gid' ];
+
+          attributes.forEach(attr => {
+            Array.prototype.forEach.call(fragment.querySelectorAll(`[${attr}]`), node => {
+              let magicPath = node.getAttribute(attr);
+              node.setAttribute(attr, magicPath.replace(`[${this.as}]`, hash));
+            });
+          });
+        }
+
+        while (this.children.length > 1) {
+          Polymer.dom(this).removeChild(this.children[1]);
+        }
+
+        items.forEach((item, i) => {
+          let fragment = document.importNode(template.content, true);
+          replaceKeyWith(fragment, item);
+          Polymer.dom(this).appendChild(fragment);
+        });
+      },
+
+      /**
+       * Utility method to open editor
+       * @return {undefined}
+       */
+      _edit() {
+        this.active = true;
+      },
+
+      /**
+       * Import the editor component on editable
+       * @param  {Boolean} editable Whether collection is editable
+       * @return {undefined}
+       */
+      _importEditor(editable) {
+        if (editable) {
+          this.importHref(this.resolveUrl(EDITOR_IMPORT));
+        }
+      },
+
+      /**
+       * Whether to show the empty content placeholder
+       * @param  {Array} items Items in the collection
+       * @return {undefined}
+       */
+      _showPlaceholder(items) {
+        return items.value.length === 0;
+      },
+
+      _hideEdit(items, active) {
+        return items.value.length === 0 || active;
+      }
+    });
+  </script>
+</dom-module>

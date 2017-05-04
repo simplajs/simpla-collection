@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>simpla-collection Demo</title>
+
+    <!-- Setup demo page -->
+    <script src="https://unpkg.com/webcomponents.js@^0.7.24/webcomponents-lite.min.js"></script>
+    <script>
+      window.Polymer = { dom: 'shadow' };
+    </script>
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../simpla-demo-helper/simpla-demo-helper.html">
+
+    <!-- Import component -->
+    <link rel="import" href="../simpla-collection.html">
+
+    <!-- Import example elements for demos -->
+    <link rel="import" href="../../simpla-img/simpla-img.html" async>
+    <link rel="import" href="../../simpla-text/simpla-text.html" async>
+    <link rel="import" href="../../simpla-paths/simpla-paths.html" async>
+
+    <!-- Demo styles -->
+    <style>
+      /* Page styles */
+      body {
+        font-family: sans-serif;
+        color: #303c46
+      }
+
+      .wrapper {
+        width: 90%;
+        max-width: 38rem;
+        margin: 2rem auto;
+      }
+
+      .demo {
+        display: inline-block;
+        width: 100%;
+        margin: 2rem 0;
+      }
+
+      .demo__title {
+        font-size: 1.4rem;
+        font-weight: 400;
+      }
+
+      /* Demo styles */
+      img {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+
+      <simpla-demo-helper></simpla-demo-helper>
+
+      <div class="demo">
+        <h1 class="demo__title">Basic</h1>
+        <demo-snippet>
+          <template>
+            <simpla-collection path="/basic">
+              <template>
+                <img is="simpla-img" path="/basic/[item]">
+              </template>
+            </simpla-collection>
+          </template>
+        </demo-snippet>
+      </div>
+
+      <div class="demo">
+        <h1 class="demo__title">Using simpla-paths</h1>
+        <demo-snippet>
+          <template>
+            <simpla-collection sid="simpla-paths">
+              <template>
+                <div sid="[item]">
+                  <img is="simpla-img" sid="image">
+                  <simpla-text sid="caption"></simpla-text>
+                </div>
+              </template>
+            </simpla-collection>
+          </template>
+        </demo-snippet>
+      </div>
+
+      <div class="demo">
+        <h1 class="demo__title">Custom item name</h1>
+        <demo-snippet>
+          <template>
+            <simpla-collection path="/item-name" as="image">
+              <template>
+                <img is="simpla-img" path="/item-name/[image]">
+              </template>
+            </simpla-collection>
+          </template>
+        </demo-snippet>
+      </div>
+
+    </div>
+  </body>
+</html>
