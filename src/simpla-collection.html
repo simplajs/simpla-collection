@@ -4,132 +4,30 @@
 <dom-module id="simpla-collection">
   <template>
     <style>
-      :host, *, *::before, *::after {
-        box-sizing: border-box;
-      }
-
       :host {
         display: block;
-        overflow: hidden;
-        -moz-osx-font-smoothing: grayscale;
-         -webkit-font-smoothing: antialiased;
-                 font-smoothing: antialiased;
+        box-sizing: border-box;
       }
 
       .wrapper {
         position: relative;
         min-height: 100px;
-      }
-
-      /**
-       * Edit button
-       */
-      .edit {
-        @apply --simpla-button;
-        display: flex;
-        position: absolute;
-        top: 0.5em;
-        left: 0.5em;
-        align-items: center;
-        background: var(--simpla-grey-700);
-        color: white;
-        z-index: var(--simpla-on-top);
-        opacity: 0;
-      }
-
-      :host(:hover) .edit {
-        opacity: 1;
-      }
-
-      .edit::before {
-        @apply --simpla-button-highlight;
-      }
-
-      .edit:active::before {
-        @apply --simpla-button-highlight-active;
-      }
-
-      .edit__icon {
-        --iron-icon-width: 1em;
-        --iron-icon-height: 1em;
-        margin-right: 0.5em;
-      }
-
-      /**
-       * Empty content placeholder
-       */
-      .placeholder {
-        position: absolute;
-        display: flex;
-        top: 0;
-        left: 0;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        background: var(--simpla-grey-100);
-        cursor: pointer;
-      }
-
-      .placeholder__label {
-        @apply --simpla-button;
-        display: flex;
-        align-items: center;
-        border-radius: 999px;
-        padding-left: 1.25em;
-        padding-right: 1.25em;
-        background: var(--simpla-grey-300);
-        color: var(--simpla-grey-700);
-      }
-
-      .placeholder__label__icon {
-        --iron-icon-width: 1.1em;
-        --iron-icon-height: 1.1em;
-        margin-right: 0.3em;
-      }
-
-      /* Patch hidden prop in Chrome and IE */
-      [hidden] {
-        display: none !important;
+        box-sizing: border-box;
       }
     </style>
 
-    <simpla-collection-editor
-      items="{{items}}"
-      as="[[as]]"
-      active="{{active}}">
-    </simpla-collection-editor>
-
     <div class="wrapper">
-
-      <!--
-        All components required by this DOM are
-        imported by simpla-collection-editor
-      -->
       <template is="dom-if" if="[[editable]]">
-        <button class="edit" on-tap="_edit" hidden$="[[_hideEdit(items.*, active)]]">
-          <iron-icon
-            class="edit__icon"
-            icon="simpla-collection:mode-edit">
-          </iron-icon>
-          [[as]]s
-        </button>
-
-        <div class="placeholder" on-tap="add" hidden$="[[!_showPlaceholder(items.*)]]" >
-          <div class="placeholder__label">
-            <iron-icon
-              class="placeholder__label__icon"
-              icon="simpla-collection:add">
-            </iron-icon>
-            add [[as]]
-          </div>
-        </div>
+        <simpla-collection-editor
+          items="[[items]]"
+          as="[[as]]"
+          active="{{active}}"
+          on-collection-item-edit="_handleEdit">
+        </simpla-collection-editor>
       </template>
 
       <slot></slot>
-
     </div>
-
   </template>
 
   <script>
@@ -207,7 +105,7 @@
        * @return {undefined}
        */
       add() {
-        this.push('items', generateId());
+        this.push('items', { id: generateId() });
       },
 
       /**
@@ -218,8 +116,7 @@
        */
       remove(id) {
         let path = `${this.path}/${id}`,
-            item = this.items.find(id),
-            itemIndex = this.items.indexOf(id);
+            itemIndex = this.items.indexOf({ id: id });
 
         Simpla.remove(path);
         this.splice('items', itemIndex, 1);
@@ -234,13 +131,21 @@
       swap(a, b) {
         let { items } = this,
             newItems = items.slice(),
-            aIndex = items.indexOf(a),
-            bIndex = items.indexOf(b);
+            aIndex = items.indexOf({ id: a }),
+            bIndex = items.indexOf({ id: b });
 
         newItems[bIndex] = items[aIndex];
         newItems[aIndex] = items[bIndex];
 
         this.items = newItems;
+      },
+
+      _handleEdit(e) {
+        let action = e.detail.action,
+            args = e.detail.args;
+
+        this[action](...args);
+        e.stopPropagation();
       },
 
       /**
@@ -268,17 +173,9 @@
 
         items.forEach((item, i) => {
           let fragment = document.importNode(template.content, true);
-          replaceKeyWith(fragment, item);
+          replaceKeyWith(fragment, item.id);
           Polymer.dom(this).appendChild(fragment);
         });
-      },
-
-      /**
-       * Utility method to open editor
-       * @return {undefined}
-       */
-      _edit() {
-        this.active = true;
       },
 
       /**
@@ -290,19 +187,6 @@
         if (editable) {
           this.importHref(this.resolveUrl(EDITOR_IMPORT));
         }
-      },
-
-      /**
-       * Whether to show the empty content placeholder
-       * @param  {Array} items Items in the collection
-       * @return {undefined}
-       */
-      _showPlaceholder(items) {
-        return items.value.length === 0;
-      },
-
-      _hideEdit(items, active) {
-        return items.value.length === 0 || active;
       }
     });
   </script>

@@ -35,6 +35,73 @@
       }
 
       /**
+       * Inline edit button
+       */
+      .edit {
+        @apply --simpla-button;
+        display: flex;
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        align-items: center;
+        background: var(--simpla-grey-700);
+        color: white;
+        z-index: var(--simpla-on-top);
+        opacity: 0;
+      }
+
+      :host(:hover) .edit {
+        opacity: 1;
+      }
+
+      .edit::before {
+        @apply --simpla-button-highlight;
+      }
+
+      .edit:active::before {
+        @apply --simpla-button-highlight-active;
+      }
+
+      .edit__icon {
+        --iron-icon-width: 1em;
+        --iron-icon-height: 1em;
+        margin-right: 0.5em;
+      }
+
+      /**
+       * Empty content placeholder
+       */
+      .placeholder {
+        position: absolute;
+        display: flex;
+        top: 0;
+        left: 0;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        background: var(--simpla-grey-100);
+        cursor: pointer;
+      }
+
+      .placeholder__label {
+        @apply --simpla-button;
+        display: flex;
+        align-items: center;
+        border-radius: 999px;
+        padding-left: 1.25em;
+        padding-right: 1.25em;
+        background: var(--simpla-grey-300);
+        color: var(--simpla-grey-700);
+      }
+
+      .placeholder__label__icon {
+        --iron-icon-width: 1.1em;
+        --iron-icon-height: 1.1em;
+        margin-right: 0.3em;
+      }
+
+      /**
        * Editor controls
        */
       .editor {
@@ -121,7 +188,7 @@
         right: 0;
         align-items: center;
         justify-content: center;
-        transform: translate(20%, -20%);
+        transform: translate(30%, -30%);
         background: var(--simpla-grey-700);
         color: white;
         width: var(--simpla-scale-1);
@@ -144,8 +211,41 @@
         top: 0.5em;
         left: 0.5em;
       }
+
+      /* Path hidden prop in Chrome and IE */
+      [hidden] {
+        display: none !important;
+      }
     </style>
 
+    <!-- Inline edit UI -->
+    <button
+      class="edit"
+      on-tap="_open"
+      hidden$="[[_hideEdit(items.*, active)]]"
+    >
+      <iron-icon
+        class="edit__icon"
+        icon="simpla-collection:mode-edit">
+      </iron-icon>
+      [[_pluralize(as)]]
+    </button>
+
+    <div
+      class="placeholder"
+      on-tap="_addItem"
+      hidden$="[[!_showPlaceholder(items.*)]]"
+    >
+      <div class="placeholder__label">
+        <iron-icon
+          class="placeholder__label__icon"
+          icon="simpla-collection:add">
+        </iron-icon>
+        add [[as]]
+      </div>
+    </div>
+
+    <!-- Editor -->
     <simple-drawer
       class="editor"
       active="{{active}}"
@@ -158,15 +258,18 @@
         </iron-icon>
       </a>
 
-      <sortable-js class="editor__list">
+      <sortable-js class="editor__list" on-update="_swapItems">
         <template is="dom-repeat" items="[[items]]">
-          <div class="item" data-index$="[[index]]">
+          <div class="item">
             <iron-icon
               class="item__drag"
               icon="simpla-collection:drag-handle">
             </iron-icon>
 
-            <a class="item__remove" on-tap="_removeItem">
+            <a class="item__remove"
+              on-tap="_removeItem"
+              data-id$="[[item]]"
+            >
               <iron-icon
                 class="item__remove__icon"
                 icon="simpla-collection:remove">
@@ -187,11 +290,9 @@
 
   </template>
   <script>
-    const ITEM_INDEX_ATTRIBUTE = 'data-index';
+    import plur from 'plur';
 
-    function generateId() {
-      return Math.random().toString(36).substr(-4);
-    }
+    const REMOVE_ID_ATTRIBUTE = 'data-id';
 
     Polymer({
       is: 'simpla-collection-editor',
@@ -210,23 +311,60 @@
       },
 
       _removeItem(e) {
-        let itemIndex = Polymer.dom(e).rootTarget
-              .closest(`[${ITEM_INDEX_ATTRIBUTE}]`)
-              .getAttribute(`[${ITEM_INDEX_ATTRIBUTE}]`);
+        let item = Polymer.dom(e).rootTarget
+              .getAttribute(`[${REMOVE_ID_ATTRIBUTE}]`);
 
-        this.splice('items', itemIndex, 1);
+        this.fire('collection-item-edit', {
+          action: 'remove',
+          args: [ item ]
+        });
       },
 
       _addItem() {
-        this.push('items', generateId());
+        this.fire('collection-item-edit', {
+          action: 'add',
+          args: []
+        });
+      },
+
+      _swapItems(e) {
+        let { items } = this,
+            itemA = items[e.oldIndex].id,
+            itemB = items[e.newIndex].id;
+
+        this.fire('collection-item-edit', {
+          action: 'add',
+          args: [ itemA, itemB ]
+        });
+      },
+
+      _open() {
+        this.active = true;
       },
 
       _close() {
         this.active = false;
       },
 
+      /**
+       * Whether to show the empty content placeholder
+       * @param  {Array} items Items in the collection
+       * @return {undefined}
+       */
+      _showPlaceholder(items) {
+        return items.value.length === 0;
+      },
+
+      _hideEdit(items, active) {
+        return items.value.length === 0 || active;
+      },
+
       _capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+      },
+
+      _pluralize(string) {
+        return plur(string, 2);
       },
 
       _addOne(number) {

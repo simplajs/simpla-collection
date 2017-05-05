@@ -23,6 +23,7 @@ const rollup = require('gulp-rollup-file');
 const rollupif = require('rollup-plugin-conditional');
 const resolve = require('rollup-plugin-node-resolve');
 const commonJs = require('rollup-plugin-commonjs');
+const json = require('rollup-plugin-json');
 const babel = require('rollup-plugin-babel');
 const uglify = require('rollup-plugin-uglify');
 const uglifyHarmony = require('uglify-js-harmony').minify;
@@ -39,6 +40,7 @@ const bs = browserSync.create(),
           plugins: [
             resolve({ main: true, browser: true }),
             commonJs(),
+            json(),
             babel({
               exclude: 'node_modules/**/*'
             }),
