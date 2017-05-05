@@ -142,7 +142,7 @@ Simpla-collection stores meta information about its items on Simpla's API and in
 ```js
 [
   { id: 'dwubz' },
-  { id: 'hswqb' },
+  { id: 'h3sqb' },
   ...
 ]
 ```
