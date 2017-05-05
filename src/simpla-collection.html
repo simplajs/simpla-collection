@@ -115,8 +115,10 @@
        * @return {undefined}
        */
       remove(id) {
-        let path = `${this.path}/${id}`,
-            itemIndex = this.items.indexOf({ id: id });
+        let { items } = this,
+            path = `${this.path}/${id}`,
+            item = items.find(item => item.id === id),
+            itemIndex = items.indexOf(item);
 
         Simpla.remove(path);
         this.splice('items', itemIndex, 1);
