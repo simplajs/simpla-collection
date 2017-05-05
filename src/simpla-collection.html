@@ -131,10 +131,12 @@
        * @return {undefined}
        */
       swap(a, b) {
+        const getItem = id => this.items.find(item => item.id === id);
+
         let { items } = this,
             newItems = items.slice(),
-            aIndex = items.indexOf({ id: a }),
-            bIndex = items.indexOf({ id: b });
+            aIndex = items.indexOf(getItem(a)),
+            bIndex = items.indexOf(getItem(b));
 
         newItems[bIndex] = items[aIndex];
         newItems[aIndex] = items[bIndex];
