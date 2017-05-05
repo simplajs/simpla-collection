@@ -146,9 +146,12 @@
       }
     </style>
 
-    <simple-drawer class="editor" active="{{active}}" no-blur>
-
-      <a class="editor__close btn" on-tap="_close">
+    <simple-drawer
+      class="editor"
+      active="{{active}}"
+      no-child-clicks
+    >
+      <a class="editor__close" on-tap="_close">
         <iron-icon
           class="editor__close__icon"
           icon="simpla-collection:check">
