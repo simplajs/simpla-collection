@@ -140,14 +140,6 @@
         this.items = newItems;
       },
 
-      _handleEdit(e) {
-        let action = e.detail.action,
-            args = e.detail.args;
-
-        this[action](...args);
-        e.stopPropagation();
-      },
-
       /**
        * Render the collection
        * @return {undefined}
@@ -176,6 +168,19 @@
           replaceKeyWith(fragment, item.id);
           Polymer.dom(this).appendChild(fragment);
         });
+      },
+
+      /**
+       * Parse edit events from editor and call appropriate action
+       * @param  {CustomEvent} e Edit event from simpla-collection-editor
+       * @return {undefined}
+       */
+      _handleEdit(e) {
+        let action = e.detail.action,
+            args = e.detail.args;
+
+        e.stopPropagation();
+        this[action](...args);
       },
 
       /**

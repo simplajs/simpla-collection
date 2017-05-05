@@ -284,7 +284,7 @@
       </sortable-js>
 
       <button class="editor__add" on-tap="_addItem">
-        add item
+        add [[as]]
       </button>
     </simple-drawer>
 
@@ -310,6 +310,11 @@
 
       },
 
+      /**
+       * Tell simpla-collection to remove given item
+       * @param  {Event} e Click event from item to remove
+       * @return {undefined}
+       */
       _removeItem(e) {
         let item = Polymer.dom(e).rootTarget
               .getAttribute(`[${REMOVE_ID_ATTRIBUTE}]`);
@@ -320,6 +325,10 @@
         });
       },
 
+      /**
+       * Tell simpla-collection to add a new item
+       * @return {undefined}
+       */
       _addItem() {
         this.fire('collection-item-edit', {
           action: 'add',
@@ -327,6 +336,11 @@
         });
       },
 
+      /**
+       * Tell simpla-collection to swap two items
+       * @param  {CustomEvent} e Update event from SortableJS
+       * @return {undefined}
+       */
       _swapItems(e) {
         let { items } = this,
             itemA = items[e.oldIndex].id,
@@ -338,10 +352,18 @@
         });
       },
 
+      /**
+       * Utility method to open editor
+       * @return {undefined}
+       */
       _open() {
         this.active = true;
       },
 
+      /**
+       * Utility method to close editor
+       * @return {undefined}
+       */
       _close() {
         this.active = false;
       },
@@ -355,18 +377,39 @@
         return items.value.length === 0;
       },
 
+      /**
+       * Checks whether inline edit button should be hidden
+       * @param  {Array} items    Observable version of items array
+       * @param  {Boolean} active Whether editor is open
+       * @return {Boolean}        Whether to hide edit button
+       */
       _hideEdit(items, active) {
         return items.value.length === 0 || active;
       },
 
+      /**
+       * Capitalize the first letter of a string
+       * @param  {String} string String to capitalize
+       * @return {String}        Capitalized string
+       */
       _capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
 
+      /**
+       * Pluralize a string
+       * @param  {String} string String to pluralize
+       * @return {String}        Pluralized string
+       */
       _pluralize(string) {
         return plur(string, 2);
       },
 
+      /**
+       * Add one to a number
+       * @param {Number} number Number to add one to
+       * @return {Number}       Number with one added
+       */
       _addOne(number) {
         return number + 1;
       }
