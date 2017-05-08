@@ -59,7 +59,7 @@ Import simpla-collection into the `<head>` of your document
 <link rel="import" href="/bower_components/simpla-collection/simpla-collection.html">
 ```
 
-And then use it on your page wherever you want to create a collection of items. Specify a content path (where the collection's data will be stored on Simpla's API) in a `path` attribute, and write the template for your collection items in a `<template>` inside simpla-collection. Simpla-collection also exposes an `[item]` key to use in paths of Simpla elements inside your template.
+And then use it on your page wherever you want to create a collection of items. Specify a content path (where the collection's data will be stored on Simpla's API) in a `path` attribute. Define the template for the items in your collection in a `<template>` element inside simpla-collection. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
 
 ```html
 <simpla-collection path="/collection">
@@ -88,7 +88,9 @@ Simpla.editable(true);
 
 ```html
 <!-- Make only this collection editable -->
-<simpla-collection path="/collection" editable></simpla-collection>
+<simpla-collection path="/collection" editable>
+  <template>...</template>
+</simpla-collection>
 ```
 
 Entering edit mode with Simpla is the recommended way to edit collections. It ensures all elements on a page remain in sync and updates Simpla's public `'editable'` state, which other elements may rely on.
@@ -182,7 +184,9 @@ Property      | Type    | Default           | Description
 Properties can be set either directly with JavaScript or as attributes on the element
 
 ```html
-<simpla-collection path="/collection"></simpla-collection>
+<simpla-collection path="/collection">
+  <template>...</template>
+</simpla-collection>
 
 <script>
   document.querySelector('simpla-collection').editable = true;
@@ -200,7 +204,9 @@ Method        | Arguments                  | Description
 Methods can be called on the element directly
 
 ```html
-<simpla-collection path="/collection"></simpla-collection>
+<simpla-collection path="/collection">
+  <template>...</template>
+</simpla-collection>
 
 <script>
   document.querySelector('simpla-collection').add();
