@@ -31,6 +31,13 @@
       </template>
     </test-fixture>
     <script>
+      const COLLECTION_PATH = '/test',
+            EDITOR_COMPONENT = 'simpla-collection-editor.html',
+            ITEMS = () => [
+              { id: 'first' },
+              { id: 'second' },
+            ];
+
       describe('<simpla-collection>', function() {
         var component;
 
@@ -42,6 +49,61 @@
         it('is okay', function() {
           expect(component).to.be.ok;
         });
+
+        describe('rendering', function() {
+
+          it('renders the template for all items in the collection', function() {
+            // @TODO
+          });
+
+          it('replaces the [item] key in paths with the item id', function() {
+            // @TODO
+          })
+
+        });
+
+        describe('editor', function() {
+
+          it('imports the editor component when editable is true', function() {
+            Simpla.editable(true);
+            expect(document.head.querySelector('link[href$="' + EDITOR_COMPONENT + '"]')).to.be.ok;
+          });
+
+        });
+
+        describe('manipulations', function() {
+
+          it('adds an item to the collection when add() is called', function() {
+            expect(component.items.length).to.equal(0);
+            component.add();
+            expect(component.items.length).to.equal(1);
+            expect(component.items[0].id).to.be.ok;
+          });
+
+          it('removes the correct item from the collection when remove(id) is called', function() {
+            component.items = ITEMS();
+            component.remove(ITEMS()[0].id);
+            expect(component.items[0].id).to.not.equal(ITEMS()[0].id);
+          });
+
+          it('removes all Simpla data for an item when remove(id) is called', function() {
+            Simpla.set(COLLECTION_PATH, {
+              type: 'Collection',
+              data: {
+                items: ITEMS()
+              }
+            });
+            component.remove(ITEMS()[0].id);
+            expect(Simpla.get(COLLECTION_PATH + '/' + ITEMS()[0].id)).to.be.empty;
+          });
+
+          it('swaps the correct items in the collection when swap(a, b) is called', function() {
+            component.items = ITEMS();
+            component.swap(ITEMS()[0].id, ITEMS()[1].id);
+            expect(component.items[0].id).to.equal(ITEMS()[1].id);
+            expect(component.items[1].id).to.equal(ITEMS()[0].id);
+          });
+        })
       });
     </script>
   </body>
