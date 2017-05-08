@@ -56,11 +56,40 @@
             // @TODO
           });
 
-          it('replaces the [item] key in paths with the item id', function() {
+          it('properly updates rendered DOM when an item is added', function() {
+            component.items = ITEMS();
+            // @TODO expect
+            component.items = ITEMS().push({ id: 'third' });
+            // @TODO expect
+          });
+
+          it('properly updates rendered DOM when an item is removed', function() {
+            component.items = ITEMS();
+            // @TODO expect
+            component.items = ITEMS().slice(1,1);
+          });
+
+          it('property updates rendered DOM when two items are swapped', function() {
             // @TODO
           })
 
         });
+
+        describe('templating', function() {
+
+          it('replaces the [item] key in paths with the item id', function() {
+            // @TODO
+          });
+
+          it('replaces the [item] key in SIDs and GIDs with the item id', function() {
+            // @TODO
+          });
+
+          it('replaces the item key in paths when a custom item name is set', function() {
+            // @TODO
+          });
+
+        })
 
         describe('editor', function() {
 
