@@ -15,7 +15,7 @@
         items="[[items]]"
         as="[[as]]"
         active="{{active}}"
-        data-edit-button-visible$="[[_showEditButton]]"
+        data-edit-button-visible$="[[_editButtonVisible]]"
         on-collection-item-edit="_handleEdit">
       </simpla-collection-editor>
     </template>
@@ -78,16 +78,13 @@
           value: false
         },
 
-        _showEditButton: {
-          type: Boolean,
-          value: false
-        }
+        _editButtonVisible: Boolean
 
       },
 
       listeners: {
-        'mouseover': '_toggleEditButton',
-        'mouseout': '_toggleEditButton'
+        'mouseover': '_showEditButton',
+        'mouseout': '_hideEditButton'
       },
 
       observers: [
@@ -195,13 +192,23 @@
       },
 
       /**
-       * Toggle the editors inline button based on hover
+       * Show the inline edit button based on mouseover
        * More performant to keep button in editor but handle hover with events on mediator
-       * @param  {Event} e Mouseover or Mouseout event
+       * @param  {Event} e Mouseover event
        * @return {undefined}
        */
-      _toggleEditButton() {
-        this._showEditButton = !this._showEditButton;
+      _showEditButton() {
+        this._editButtonVisible = true;
+      },
+
+      /**
+       * Show the inline edit button based on mouseout
+       * More performant to keep button in editor but handle hover with events on mediator
+       * @param  {Event} e Mouseout event
+       * @return {undefined}
+       */
+      _hideEditButton() {
+        this._editButtonVisible = false;
       }
     });
   </script>
