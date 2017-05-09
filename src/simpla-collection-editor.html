@@ -29,7 +29,6 @@
         --iron-icon-width: 1em;
         --iron-icon-height: 1em;
         position: relative;
-        min-height: 100px;
         width: 100%;
         font-size: var(--simpla-scale-0);
         -moz-osx-font-smoothing: grayscale;
@@ -75,14 +74,12 @@
        * Empty content placeholder
        */
       .placeholder {
-        position: absolute;
         display: flex;
-        top: 0;
-        left: 0;
         align-items: center;
         justify-content: center;
         width: 100%;
         height: 100%;
+        min-height: 100px;
         background: var(--simpla-grey-100);
         cursor: pointer;
       }
