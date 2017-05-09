@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "polymer": "^1.8.0",
-    "simpla-element-behavior": "^0.1.2",
+    "simpla-element-behavior": "^0.2.0",
     "simple-drawer": "SimpleElements/simple-drawer#^0.3.10",
     "iron-iconset-svg": "^1.1.1",
     "iron-icon": "^1.0.13",

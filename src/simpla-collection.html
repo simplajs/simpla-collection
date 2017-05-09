@@ -6,6 +6,7 @@
     <style>
       :host {
         display: block;
+        position: relative;
       }
     </style>
 
@@ -14,6 +15,7 @@
         items="[[items]]"
         as="[[as]]"
         active="{{active}}"
+        data-edit-button-visible$="[[_showEditButton]]"
         on-collection-item-edit="_handleEdit">
       </simpla-collection-editor>
     </template>
@@ -22,7 +24,11 @@
   </template>
 
   <script>
-    const EDITOR_IMPORT = 'simpla-collection-editor.html';
+    const EDITOR_IMPORT = 'simpla-collection-editor.html',
+          SIMPLA_CONFIG = {
+            type: 'Collection',
+            dataProperties: [ 'items' ]
+          };
 
     function generateId() {
       return Math.random().toString(36).substr(-5);
@@ -70,26 +76,25 @@
           observer: '_importEditor',
           notify: true,
           value: false
+        },
+
+        _showEditButton: {
+          type: Boolean,
+          value: false
         }
 
+      },
+
+      listeners: {
+        'mouseover': '_toggleEditButton',
+        'mouseout': '_toggleEditButton'
       },
 
       observers: [
         '_render(items.*)'
       ],
 
-      behaviors: [ SimplaBehaviors.Element ],
-
-      /**
-       * Setup Simpla on element creation
-       * @return {undefined}
-       */
-      created() {
-        this.setupSimpla({
-          type: 'Collection',
-          dataProperties: [ 'items' ]
-        });
-      },
+      behaviors: [ SimplaBehaviors.Element(SIMPLA_CONFIG) ],
 
       /**
        * Add an item to the collection
@@ -187,6 +192,16 @@
         if (editable) {
           this.importHref(this.resolveUrl(EDITOR_IMPORT));
         }
+      },
+
+      /**
+       * Toggle the editors inline button based on hover
+       * More performant to keep button in editor but handle hover with events on mediator
+       * @param  {Event} e Mouseover or Mouseout event
+       * @return {undefined}
+       */
+      _toggleEditButton() {
+        this._showEditButton = !this._showEditButton;
       }
     });
   </script>

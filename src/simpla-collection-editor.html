@@ -28,8 +28,7 @@
       :host {
         --iron-icon-width: 1em;
         --iron-icon-height: 1em;
-        position: relative;
-        width: 100%;
+        display: block;
         font-size: var(--simpla-scale-0);
         -moz-osx-font-smoothing: grayscale;
          -webkit-font-smoothing: antialiased;
@@ -52,7 +51,7 @@
         opacity: 0;
       }
 
-      :host(:hover) .edit {
+      :host([data-edit-button-visible]) .edit {
         opacity: 1;
       }
 
