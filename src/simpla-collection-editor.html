@@ -104,10 +104,6 @@
       /**
        * Editor controls
        */
-      .editor {
-        padding: 1.25em 2em;
-      }
-
       .editor__close {
         position: absolute;
         display: flex;
@@ -132,6 +128,12 @@
       .editor__close__icon {
         --iron-icon-width: var(--simpla-scale-0);
         --iron-icon-height: var(--simpla-scale-0);
+      }
+
+      .editor__scroller {
+        padding: 1.25em 2em;
+        overflow-y: scroll;
+        max-height: 100%;
       }
 
       .editor__list {
@@ -266,39 +268,40 @@
         </iron-icon>
       </a>
 
-      <sortable-js class="editor__list" on-update="_swapItems">
-        <template is="dom-repeat" items="[[items]]">
-
-          <div class="item" data-item$="[[item]]">
-            <iron-icon
-              class="item__drag"
-              icon="simpla-collection:drag-handle">
-            </iron-icon>
-
-            <a class="item__remove"
-              on-tap="_removeItem"
-            >
+      <div class="editor__scroller">
+        <sortable-js class="editor__list" on-update="_swapItems">
+          <template is="dom-repeat" items="[[items]]">
+            <div class="item" data-item$="[[item]]">
               <iron-icon
-                class="item__remove__icon"
-                icon="simpla-collection:remove">
+                class="item__drag"
+                icon="simpla-collection:drag-handle">
               </iron-icon>
-            </a>
 
-            <span class="item__label">
-              [[_capitalize(as)]] [[_addOne(index)]]
-            </span>
+              <a class="item__remove"
+                on-tap="_removeItem"
+              >
+                <iron-icon
+                  class="item__remove__icon"
+                  icon="simpla-collection:remove">
+                </iron-icon>
+              </a>
 
-            <span class="item__id">
-              [[item.id]]
-            </span>
-          </div>
+              <span class="item__label">
+                [[_capitalize(as)]] [[_addOne(index)]]
+              </span>
 
-        </template>
-      </sortable-js>
+              <span class="item__id">
+                [[item.id]]
+              </span>
+            </div>
 
-      <button class="editor__add" on-tap="_addItem">
-        add [[as]]
-      </button>
+          </template>
+        </sortable-js>
+
+        <button class="editor__add" on-tap="_addItem">
+          add [[as]]
+        </button>
+      </div>
     </simple-drawer>
 
   </template>
