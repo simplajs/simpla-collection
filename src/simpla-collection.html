@@ -6,29 +6,20 @@
     <style>
       :host {
         display: block;
-        box-sizing: border-box;
-      }
-
-      .wrapper {
-        position: relative;
-        min-height: 100px;
-        width: 100%;
-        box-sizing: border-box;
       }
     </style>
 
-    <div class="wrapper">
-      <template is="dom-if" if="[[editable]]">
-        <simpla-collection-editor
-          items="[[items]]"
-          as="[[as]]"
-          active="{{active}}"
-          on-collection-item-edit="_handleEdit">
-        </simpla-collection-editor>
-      </template>
+    <template is="dom-if" if="[[editable]]">
+      <simpla-collection-editor
+        items="[[items]]"
+        as="[[as]]"
+        active="{{active}}"
+        on-collection-item-edit="_handleEdit">
+      </simpla-collection-editor>
+    </template>
 
-      <slot></slot>
-    </div>
+    <slot></slot>
+
   </template>
 
   <script>
