@@ -193,26 +193,6 @@ Properties can be set either directly with JavaScript or as attributes on the el
 </script>
 ```
 
-### Methods
-
-Method        | Arguments                  | Description                                                 
-------------- | -------------------------- | -----------                                                 
-`add()`       | None                       | Adds a new item to the collection
-`remove(id)`  | `id | String`              | Removes an item with a given ID from the collection
-`swap(a, b)`  | `a | String`, `b | String` | Swaps two items in the collection, takes two item IDs to swap
-
-Methods can be called on the element directly
-
-```html
-<simpla-collection path="/collection">
-  <template>...</template>
-</simpla-collection>
-
-<script>
-  document.querySelector('simpla-collection').add();
-</script>
-```
-
 ### Events
 
 Event              | Description                                    
