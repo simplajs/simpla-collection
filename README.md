@@ -24,6 +24,9 @@ Simpla-collection lets you create dynamic collections of content in HTML, using 
       img {
         max-width: 15rem;
       }
+      simpla-collection {
+        margin-top: 2rem;
+      }
     </style>
     <next-code-block></next-code-block>
   </template>
