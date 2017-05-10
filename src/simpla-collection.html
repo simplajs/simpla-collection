@@ -6,17 +6,16 @@
     <style>
       :host {
         display: block;
-        position: relative;
       }
     </style>
 
     <template is="dom-if" if="[[editable]]">
       <simpla-collection-editor
-        items="{{items}}"
+        path="[[path]]"
         as="[[as]]"
+        items="{{items}}"
         active="{{active}}"
-        data-edit-button-visible$="[[_editButtonVisible]]"
-        on-collection-item-edit="_handleEdit">
+        data-edit-button-visible$="[[_editButtonVisible]]">
       </simpla-collection-editor>
     </template>
 
@@ -29,10 +28,6 @@
             type: 'Collection',
             dataProperties: [ 'items' ]
           };
-
-    function generateId() {
-      return Math.random().toString(36).substr(-5);
-    }
 
     Polymer({
       is: 'simpla-collection',
@@ -78,6 +73,11 @@
           value: false
         },
 
+        /**
+         * Wether inline edit button is visible
+         * Show-on-hover handled with events rather than CSS
+         * @type {Boolean}
+         */
         _editButtonVisible: Boolean
 
       },
@@ -124,19 +124,6 @@
       },
 
       /**
-       * Parse edit events from editor and call appropriate action
-       * @param  {CustomEvent} e Edit event from simpla-collection-editor
-       * @return {undefined}
-       */
-      _handleEdit(e) {
-        let action = e.detail.action,
-            args = e.detail.args;
-
-        e.stopPropagation();
-        this[action](...args);
-      },
-
-      /**
        * Import the editor component on editable
        * @param  {Boolean} editable Whether collection is editable
        * @return {undefined}
@@ -149,7 +136,6 @@
 
       /**
        * Show the inline edit button based on mouseover
-       * More performant to keep button in editor but handle hover with events on mediator
        * @param  {Event} e Mouseover event
        * @return {undefined}
        */
@@ -159,7 +145,6 @@
 
       /**
        * Show the inline edit button based on mouseout
-       * More performant to keep button in editor but handle hover with events on mediator
        * @param  {Event} e Mouseout event
        * @return {undefined}
        */

@@ -29,10 +29,20 @@
         --iron-icon-width: 1em;
         --iron-icon-height: 1em;
         display: block;
+        position: sticky;
+        top: 0;
+        height: 0;
+        overflow: visible;
+        z-index: var(--simpla-on-top);
         font-size: var(--simpla-scale-0);
+        font-family: var(--simpla-font-family);
         -moz-osx-font-smoothing: grayscale;
          -webkit-font-smoothing: antialiased;
                  font-smoothing: antialiased;
+      }
+
+      :host([data-placeholder]) {
+        height: auto;
       }
 
       /**
@@ -41,13 +51,11 @@
       .edit {
         @apply --simpla-button;
         display: flex;
-        position: absolute;
-        top: 0.5em;
-        left: 0.5em;
         align-items: center;
-        background: var(--simpla-grey-700);
         color: white;
-        z-index: var(--simpla-on-top);
+        background: var(--simpla-grey-700);
+        font-size: var(--simpla-scale-000);
+        transform: translate(0.45em, 0.45em);
         opacity: 0;
       }
 
@@ -64,8 +72,6 @@
       }
 
       .edit__icon {
-        --iron-icon-width: 1em;
-        --iron-icon-height: 1em;
         margin-right: 0.5em;
       }
 
@@ -85,7 +91,6 @@
 
       .placeholder__label {
         @apply --simpla-button;
-        display: flex;
         align-items: center;
         border-radius: 999px;
         padding-left: 1.25em;
@@ -97,7 +102,7 @@
       .placeholder__label__icon {
         --iron-icon-width: 1.1em;
         --iron-icon-height: 1.1em;
-        margin-right: 0.3em;
+        margin-bottom: 0 0.1em 0.05em 0;
       }
 
       /**
@@ -171,7 +176,7 @@
 
       .item__label {
         color: var(--simpla-grey-700);
-        font-size: var(--simpla-scale-1);
+        font-size: var(--simpla-scale-0);
         font-weight: 600;
       }
 
@@ -316,13 +321,31 @@
 
       properties: {
 
+        /**
+         * Collection path, handed down from mediator
+         * @type {String}
+         */
+        path: String,
+
+        /**
+         * Items array to edit
+         * @type {Array}
+         */
         items: {
           type: Array,
           notify: true
         },
 
+        /**
+         * Item name, passed down from simpla-collection
+         * @type {String}
+         */
         as: String,
 
+        /**
+         * Whether editor is currently open
+         * @type {Boolean}
+         */
         active: {
           type: Boolean,
           notify: true
@@ -331,16 +354,20 @@
       },
 
       /**
-       * Tell simpla-collection to remove given item
+       * Remove an item from the collection, and all related Simpla data
        * @param  {Event} e Click event from item to remove
        * @return {undefined}
        */
       _removeItem(e) {
-        this.splice('items', e.model.index, 1);
+        let { index } = e.model,
+            id = this.items[index].id;
+
+        Simpla.remove(`${this.path}/${id}`);
+        this.splice('items', index, 1);
       },
 
       /**
-       * Tell simpla-collection to add a new item
+       * Add a new item to the collection
        * @return {undefined}
        */
       _addItem() {
@@ -369,7 +396,15 @@
        * @return {undefined}
        */
       _showPlaceholder(items) {
-        return items.value.length === 0;
+        let empty = items.value.length === 0;
+
+        if (empty) {
+          this.setAttribute('data-placeholder', '');
+        } else {
+          this.removeAttribute('data-placeholder');
+        }
+
+        return empty;
       },
 
       /**

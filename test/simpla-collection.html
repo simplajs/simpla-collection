@@ -52,41 +52,40 @@
 
         describe('rendering', function() {
 
-          it('renders the template for all items in the collection', function() {
-            // @TODO
+          xit('renders the template for all items in the collection', function() {
           });
 
-          it('properly updates rendered DOM when an item is added', function() {
+          xit('properly updates rendered DOM when an item is added', function() {
             component.items = ITEMS();
-            // @TODO expect
+
             component.items = ITEMS().push({ id: 'third' });
-            // @TODO expect
+
           });
 
-          it('properly updates rendered DOM when an item is removed', function() {
+          xit('properly updates rendered DOM when an item is removed', function() {
             component.items = ITEMS();
-            // @TODO expect
+
             component.items = ITEMS().slice(1,1);
           });
 
-          it('property updates rendered DOM when two items are swapped', function() {
-            // @TODO
+          xit('property updates rendered DOM when two items are swapped', function() {
+
           })
 
         });
 
         describe('templating', function() {
 
-          it('replaces the [item] key in paths with the item id', function() {
-            // @TODO
+          xit('replaces the [item] key in paths with the item id', function() {
+
           });
 
-          it('replaces the [item] key in SIDs and GIDs with the item id', function() {
-            // @TODO
+          xit('replaces the [item] key in SIDs and GIDs with the item id', function() {
+
           });
 
-          it('replaces the item key in paths when a custom item name is set', function() {
-            // @TODO
+          xit('replaces the item key in paths when a custom item name is set', function() {
+
           });
 
         })
@@ -102,20 +101,20 @@
 
         describe('manipulations', function() {
 
-          it('adds an item to the collection when add() is called', function() {
+          xit('adds an item to the collection when add() is called', function() {
             expect(component.items.length).to.equal(0);
             component.add();
             expect(component.items.length).to.equal(1);
             expect(component.items[0].id).to.be.ok;
           });
 
-          it('removes the correct item from the collection when remove(id) is called', function() {
+          xit('removes the correct item from the collection when remove(id) is called', function() {
             component.items = ITEMS();
             component.remove(ITEMS()[0].id);
             expect(component.items[0].id).to.not.equal(ITEMS()[0].id);
           });
 
-          it('removes all Simpla data for an item when remove(id) is called', function() {
+          xit('removes all Simpla data for an item when remove(id) is called', function() {
             Simpla.set(COLLECTION_PATH, {
               type: 'Collection',
               data: {
@@ -126,7 +125,7 @@
             expect(Simpla.get(COLLECTION_PATH + '/' + ITEMS()[0].id)).to.be.empty;
           });
 
-          it('swaps the correct items in the collection when swap(a, b) is called', function() {
+          xit('swaps the correct items in the collection when swap(a, b) is called', function() {
             component.items = ITEMS();
             component.swap(ITEMS()[0].id, ITEMS()[1].id);
             expect(component.items[0].id).to.equal(ITEMS()[1].id);
