@@ -1,1 +1,802 @@
-<link rel="import" href="../polymer/polymer.html"> <link rel="import" href="../simpla-styles/simpla-styles.html"> <link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html"> <link rel="import" href="../simple-drawer/simple-drawer.html"> <link rel="import" href="../polymer-sortablejs/polymer-sortablejs.html"> <link rel="import" href="../iron-icon/iron-icon.html" async> <iron-iconset-svg name="simpla-collection"> <svg> <defs> <g id="mode-edit"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></g> <g id="add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></g> <g id="check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></g> <g id="drag-handle"><path d="M20 9H4v2h16V9zM4 15h16v-2H4v2z"/></g> <g id="remove"><path d="M19 13H5v-2h14v2z"/></g> </defs> </svg> </iron-iconset-svg> <dom-module id="simpla-collection-editor"> <template> <style>*,::after,::before,:host{box-sizing:border-box}:host{--iron-icon-width:1em;--iron-icon-height:1em;display:block;font-size:var(--simpla-scale-0);-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-smoothing:antialiased}.edit{@apply --simpla-button;display:flex;position:absolute;top:.5em;left:.5em;align-items:center;background:var(--simpla-grey-700);color:#fff;z-index:var(--simpla-on-top);opacity:0}:host([data-edit-button-visible]) .edit{opacity:1}.edit::before{@apply --simpla-button-highlight}.edit:active::before{@apply --simpla-button-highlight-active}.edit__icon{--iron-icon-width:1em;--iron-icon-height:1em;margin-right:.5em}.placeholder{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:100px;background:var(--simpla-grey-100);cursor:pointer}.placeholder__label{@apply --simpla-button;display:flex;align-items:center;border-radius:999px;padding-left:1.25em;padding-right:1.25em;background:var(--simpla-grey-300);color:var(--simpla-grey-700)}.placeholder__label__icon{--iron-icon-width:1.1em;--iron-icon-height:1.1em;margin-right:.3em}.editor__close{position:absolute;display:flex;top:.5em;right:0;align-items:center;justify-content:center;transform:translateX(40%);background:#fff;color:var(--simpla-grey-500);width:var(--simpla-scale-3);height:var(--simpla-scale-3);border-radius:50%;box-shadow:var(--simpla-elevation-1);cursor:pointer}.editor__close:hover{color:var(--simpla-grey-700)}.editor__close__icon{--iron-icon-width:var(--simpla-scale-0);--iron-icon-height:var(--simpla-scale-0)}.editor__scroller{padding:1.25em 2em;overflow-y:scroll;max-height:100%}.editor__list{display:block;width:14em}.editor__add{@apply --simpla-button;width:100%;padding:.9em}.item{display:flex;position:relative;flex-direction:column;align-items:center;justify-content:center;width:100%;height:7.75em;margin:1em auto;background:var(--simpla-grey-300);color:var(--simpla-grey-500);border-radius:var(--simpla-border-radius);cursor:pointer;cursor:-webkit-grab;cursor:grab}.item:active{cursor:-webkit-grabbing;cursor:grabbing}.item__label{color:var(--simpla-grey-700);font-size:var(--simpla-scale-1);font-weight:600}.item__id{font-size:var(--simpla-scale-00);margin-top:.3em;margin-bottom:-.6em}.item__drag,.item__remove{display:none}.item:hover .item__drag,.item:hover .item__remove{display:flex}.item__remove{position:absolute;top:0;right:0;align-items:center;justify-content:center;transform:translate(30%,-30%);background:var(--simpla-grey-700);color:#fff;width:var(--simpla-scale-1);height:var(--simpla-scale-1);border-radius:50%;cursor:pointer}.item__remove:hover{background:red}.item__remove__icon{--iron-icon-width:var(--simpla-scale-00);--iron-icon-height:var(--simpla-scale-00)}.item__drag{position:absolute;top:.5em;left:.5em}[hidden]{display:none!important}</style> <button class="edit" on-tap="_open" hidden$="[[_hideEdit(items.*, active)]]"> <iron-icon class="edit__icon" icon="simpla-collection:mode-edit"> </iron-icon> [[_pluralize(as)]] </button> <div class="placeholder" on-tap="_addItem" hidden$="[[!_showPlaceholder(items.*)]]"> <div class="placeholder__label"> <iron-icon class="placeholder__label__icon" icon="simpla-collection:add"> </iron-icon> add [[as]] </div> </div> <simple-drawer class="editor" active="{{active}}" no-child-clicks=""> <a class="editor__close" on-tap="_close"> <iron-icon class="editor__close__icon" icon="simpla-collection:check"> </iron-icon> </a> <div class="editor__scroller"> <sortable-js class="editor__list" on-update="_swapItems"> <template is="dom-repeat" items="[[items]]"> <div class="item" data-item$="[[item]]"> <iron-icon class="item__drag" icon="simpla-collection:drag-handle"> </iron-icon> <a class="item__remove" on-tap="_removeItem"> <iron-icon class="item__remove__icon" icon="simpla-collection:remove"> </iron-icon> </a> <span class="item__label"> [[_capitalize(as)]] [[_addOne(index)]] </span> <span class="item__id"> [[item.id]] </span> </div> </template> </sortable-js> <button class="editor__add" on-tap="_addItem"> add [[as]] </button> </div> </simple-drawer> </template> <script>!function(){"use strict";var e="addenda",s="aircraft",a="algae",i="alumnae",o="alumni",t="amoebae",r="analyses",n="antennae",u="antitheses",l="apices",c="appendices",m="axes",f="bacilli",h="bacteria",p="barracks",d="bases",b="beaux",v="bison",g="bureaus",w="cacti",y="calves",x="children",z="cherubim",_="codices",k="concerti",I="corpora",$="crises",C="criteria",q="curricula",A="data",O="deer",P="diagnoses",L="dice",S="dwarfs",U="echoes",j="elves",B="elk",E="ellipses",J="embargoes",N="emphases",T="errata",D="fezes",F="firmware",G="fish",H="foci",K="feet",M="formulae",Q="fungi",R="gallows",V="genera",W="geese",X="graffiti",Y="grouse",Z="halves",ee="heroes",se="hooves",ae="hypotheses",ie="indices",oe="knives",te="larvae",re="leaves",ne="libretti",ue="lives",le="loaves",ce="loci",me="lice",fe="men",he="matrices",pe="means",de="media",be="memoranda",ve="minutiae",ge="moose",we="mice",ye="nebulae",xe="neuroses",ze="news",_e="nuclei",ke="oases",Ie="offspring",$e="opera",Ce="ova",qe="oxen",Ae="paralyses",Oe="parentheses",Pe="phenomena",Le="phyla",Se="potatoes",Ue="prognoses",je="quizzes",Be="radii",Ee="referenda",Je="salmon",Ne="scarves",Te="selves",De="series",Fe="sheep",Ge="shelves",He="shrimp",Ke="species",Me="stimuli",Qe="strata",Re="swine",Ve="syllabi",We="symposia",Xe="synopses",Ye="syntheses",Ze="tableaus",es="those",ss="theses",as="thieves",is="tomatoes",os="teeth",ts="trout",rs="tuna",ns="vertebrae",us="vertices",ls="vetoes",cs="vitae",ms="vortices",fs="wharves",hs="wives",ps="wolves",ds="women",bs={addendum:e,aircraft:s,alga:a,alumna:i,alumnus:o,amoeba:t,analysis:r,antenna:n,antithesis:u,apex:l,appendix:c,axis:m,bacillus:f,bacterium:h,barracks:p,basis:d,beau:b,bison:v,bureau:g,cactus:w,calf:y,child:x,cherub:z,codex:_,concerto:k,corpus:I,crisis:$,criterion:C,curriculum:q,datum:A,deer:O,diagnosis:P,die:L,dwarf:S,echo:U,elf:j,elk:B,ellipsis:E,embargo:J,emphasis:N,erratum:T,fez:D,firmware:F,fish:G,focus:H,foot:K,formula:M,fungus:Q,gallows:R,genus:V,goose:W,graffito:X,grouse:Y,half:Z,hero:ee,hoof:se,hypothesis:ae,index:ie,knife:oe,larva:te,leaf:re,libretto:ne,life:ue,loaf:le,locus:ce,louse:me,man:fe,matrix:he,means:pe,medium:de,memorandum:be,minutia:ve,moose:ge,mouse:we,nebula:ye,neurosis:xe,news:ze,nucleus:_e,oasis:ke,offspring:Ie,opus:$e,ovum:Ce,ox:qe,paralysis:Ae,parenthesis:Oe,phenomenon:Pe,phylum:Le,potato:Se,prognosis:Ue,quiz:je,radius:Be,referendum:Ee,salmon:Je,scarf:Ne,self:Te,series:De,sheep:Fe,shelf:Ge,shrimp:He,species:Ke,stimulus:Me,stratum:Qe,swine:Re,syllabus:Ve,symposium:We,synopsis:Xe,synthesis:Ye,tableau:Ze,that:es,thesis:ss,thief:as,tomato:is,tooth:os,trout:ts,tuna:rs,vertebra:ns,vertex:us,veto:ls,vita:cs,vortex:ms,wharf:fs,wife:hs,wolf:ps,woman:ds,"château":"châteaus","faux pas":"faux pas"},vs=Object.freeze({addendum:e,aircraft:s,alga:a,alumna:i,alumnus:o,amoeba:t,analysis:r,antenna:n,antithesis:u,apex:l,appendix:c,axis:m,bacillus:f,bacterium:h,barracks:p,basis:d,beau:b,bison:v,bureau:g,cactus:w,calf:y,child:x,cherub:z,codex:_,concerto:k,corpus:I,crisis:$,criterion:C,curriculum:q,datum:A,deer:O,diagnosis:P,die:L,dwarf:S,echo:U,elf:j,elk:B,ellipsis:E,embargo:J,emphasis:N,erratum:T,fez:D,firmware:F,fish:G,focus:H,foot:K,formula:M,fungus:Q,gallows:R,genus:V,goose:W,graffito:X,grouse:Y,half:Z,hero:ee,hoof:se,hypothesis:ae,index:ie,knife:oe,larva:te,leaf:re,libretto:ne,life:ue,loaf:le,locus:ce,louse:me,man:fe,matrix:he,means:pe,medium:de,memorandum:be,minutia:ve,moose:ge,mouse:we,nebula:ye,neurosis:xe,news:ze,nucleus:_e,oasis:ke,offspring:Ie,opus:$e,ovum:Ce,ox:qe,paralysis:Ae,parenthesis:Oe,phenomenon:Pe,phylum:Le,potato:Se,prognosis:Ue,quiz:je,radius:Be,referendum:Ee,salmon:Je,scarf:Ne,self:Te,series:De,sheep:Fe,shelf:Ge,shrimp:He,species:Ke,stimulus:Me,stratum:Qe,swine:Re,syllabus:Ve,symposium:We,synopsis:Xe,synthesis:Ye,tableau:Ze,that:es,thesis:ss,thief:as,tomato:is,tooth:os,trout:ts,tuna:rs,vertebra:ns,vertex:us,veto:ls,vita:cs,vortex:ms,wharf:fs,wife:hs,wolf:ps,woman:ds,default:bs}),gs=vs&&vs.default||vs,ws=function(e,s,a){return"number"==typeof s&&(a=s),e in gs?s=gs[e]:"string"!=typeof s&&(s=(e.replace(/(?:s|x|z|ch|sh)$/i,"$&e").replace(/([^aeiou])y$/i,"$1ie")+"s").replace(/i?e?s$/i,function(s){var a=e.slice(-1)===e.slice(-1).toLowerCase();return a?s.toLowerCase():s.toUpperCase()})),1===a?e:s},ys="data-item";Polymer({is:"simpla-collection-editor",properties:{items:Array,as:String,active:{type:Boolean,notify:!0}},_removeItem:function(e){var s=Polymer.dom(e).rootTarget.closest("["+ys+"]").getAttribute(ys),a=JSON.parse(s);this.fire("collection-item-edit",{action:"remove",args:[a.id]})},_addItem:function(){this.fire("collection-item-edit",{action:"add",args:[]})},_swapItems:function(e){var s=this.items,a=s[e.oldIndex].id,i=s[e.newIndex].id;this.fire("collection-item-edit",{action:"add",args:[a,i]})},_open:function(){this.active=!0},_close:function(){this.active=!1},_showPlaceholder:function(e){return 0===e.value.length},_hideEdit:function(e,s){return 0===e.value.length||s},_capitalize:function(e){return e.charAt(0).toUpperCase()+e.slice(1)},_pluralize:function(e){return ws(e,2)},_addOne:function(e){return e+1}})}(); </script> </dom-module> 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../simpla-styles/simpla-styles.html">
+<link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../simple-drawer/simple-drawer.html">
+<link rel="import" href="../polymer-sortablejs/polymer-sortablejs.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<!-- Material icons cherry picked from iron-icons -->
+<iron-iconset-svg name="simpla-collection">
+  <svg>
+    <defs>
+      <g id="mode-edit"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></g>
+      <g id="add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></g>
+      <g id="check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></g>
+      <g id="drag-handle"><path d="M20 9H4v2h16V9zM4 15h16v-2H4v2z"/></g>
+      <g id="remove"><path d="M19 13H5v-2h14v2z"/></g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
+<dom-module id="simpla-collection-editor">
+  <template>
+    <style>
+      :host, *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      :host {
+        --iron-icon-width: 1em;
+        --iron-icon-height: 1em;
+        display: block;
+        font-size: var(--simpla-scale-0);
+        -moz-osx-font-smoothing: grayscale;
+         -webkit-font-smoothing: antialiased;
+                 font-smoothing: antialiased;
+      }
+
+      /**
+       * Inline edit button
+       */
+      .edit {
+        @apply --simpla-button;
+        display: flex;
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        align-items: center;
+        background: var(--simpla-grey-700);
+        color: white;
+        z-index: var(--simpla-on-top);
+        opacity: 0;
+      }
+
+      :host([data-edit-button-visible]) .edit {
+        opacity: 1;
+      }
+
+      .edit::before {
+        @apply --simpla-button-highlight;
+      }
+
+      .edit:active::before {
+        @apply --simpla-button-highlight-active;
+      }
+
+      .edit__icon {
+        --iron-icon-width: 1em;
+        --iron-icon-height: 1em;
+        margin-right: 0.5em;
+      }
+
+      /**
+       * Empty content placeholder
+       */
+      .placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        min-height: 100px;
+        background: var(--simpla-grey-100);
+        cursor: pointer;
+      }
+
+      .placeholder__label {
+        @apply --simpla-button;
+        display: flex;
+        align-items: center;
+        border-radius: 999px;
+        padding-left: 1.25em;
+        padding-right: 1.25em;
+        background: var(--simpla-grey-300);
+        color: var(--simpla-grey-700);
+      }
+
+      .placeholder__label__icon {
+        --iron-icon-width: 1.1em;
+        --iron-icon-height: 1.1em;
+        margin-right: 0.3em;
+      }
+
+      /**
+       * Editor controls
+       */
+      .editor__close {
+        position: absolute;
+        display: flex;
+        top: 0.5em;
+        right: 0;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(40%);
+        background: white;
+        color: var(--simpla-grey-500);
+        width: var(--simpla-scale-3);
+        height: var(--simpla-scale-3);
+        border-radius: 50%;
+        box-shadow: var(--simpla-elevation-1);
+        cursor: pointer;
+      }
+
+      .editor__close:hover {
+        color: var(--simpla-grey-700);
+      }
+
+      .editor__close__icon {
+        --iron-icon-width: var(--simpla-scale-0);
+        --iron-icon-height: var(--simpla-scale-0);
+      }
+
+      .editor__scroller {
+        padding: 1.25em 2em;
+        overflow-y: scroll;
+        max-height: 100%;
+      }
+
+      .editor__list {
+        display: block;
+        width: 14em;
+      }
+
+      .editor__add {
+        @apply --simpla-button;
+        width: 100%;
+        padding: 0.9em;
+      }
+
+      /**
+       * Item previews
+       */
+      .item {
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 7.75em;
+        margin: 1em auto;
+        background: var(--simpla-grey-300);
+        color: var(--simpla-grey-500);
+        border-radius: var(--simpla-border-radius);
+        cursor: pointer;
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
+
+      .item:active {
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+      }
+
+      .item__label {
+        color: var(--simpla-grey-700);
+        font-size: var(--simpla-scale-1);
+        font-weight: 600;
+      }
+
+      .item__id {
+        font-size: var(--simpla-scale-00);
+        margin-top: 0.3em;
+        margin-bottom: -0.6em;
+      }
+
+      .item__remove,
+      .item__drag {
+        display: none;
+      }
+
+      .item:hover .item__remove,
+      .item:hover .item__drag {
+        display: flex;
+      }
+
+      .item__remove {
+        position: absolute;
+        top: 0;
+        right: 0;
+        align-items: center;
+        justify-content: center;
+        transform: translate(30%, -30%);
+        background: var(--simpla-grey-700);
+        color: white;
+        width: var(--simpla-scale-1);
+        height: var(--simpla-scale-1);
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .item__remove:hover {
+        background: red;
+      }
+
+      .item__remove__icon {
+        --iron-icon-width: var(--simpla-scale-00);
+        --iron-icon-height: var(--simpla-scale-00);
+      }
+
+      .item__drag {
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+      }
+
+      /* Path hidden prop in Chrome and IE */
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+
+    <!-- Inline edit UI -->
+    <button class="edit" on-tap="_open" hidden$="[[_hideEdit(items.*, active)]]">
+      <iron-icon class="edit__icon" icon="simpla-collection:mode-edit">
+      </iron-icon>
+      [[_pluralize(as)]]
+    </button>
+
+    <div class="placeholder" on-tap="_addItem" hidden$="[[!_showPlaceholder(items.*)]]">
+      <div class="placeholder__label">
+        <iron-icon class="placeholder__label__icon" icon="simpla-collection:add">
+        </iron-icon>
+        add [[as]]
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <simple-drawer class="editor" active="{{active}}" no-child-clicks="">
+      <a class="editor__close" on-tap="_close">
+        <iron-icon class="editor__close__icon" icon="simpla-collection:check">
+        </iron-icon>
+      </a>
+
+      <div class="editor__scroller">
+        <sortable-js class="editor__list">
+          <template is="dom-repeat" items="{{items}}">
+            <div class="item" data-item$="[[item]]">
+              <iron-icon class="item__drag" icon="simpla-collection:drag-handle">
+              </iron-icon>
+
+              <a class="item__remove" on-tap="_removeItem">
+                <iron-icon class="item__remove__icon" icon="simpla-collection:remove">
+                </iron-icon>
+              </a>
+
+              <span class="item__label">
+                [[_capitalize(as)]] [[_addOne(index)]]
+              </span>
+
+              <span class="item__id">
+                [[item.id]]
+              </span>
+            </div>
+
+          </template>
+        </sortable-js>
+
+        <button class="editor__add" on-tap="_addItem">
+          add [[as]]
+        </button>
+      </div>
+    </simple-drawer>
+
+  </template>
+  <script>(function () {
+'use strict';
+
+var addendum = "addenda";
+var aircraft = "aircraft";
+var alga = "algae";
+var alumna = "alumnae";
+var alumnus = "alumni";
+var amoeba = "amoebae";
+var analysis = "analyses";
+var antenna = "antennae";
+var antithesis = "antitheses";
+var apex = "apices";
+var appendix = "appendices";
+var axis = "axes";
+var bacillus = "bacilli";
+var bacterium = "bacteria";
+var barracks = "barracks";
+var basis = "bases";
+var beau = "beaux";
+var bison = "bison";
+var bureau = "bureaus";
+var cactus = "cacti";
+var calf = "calves";
+var child = "children";
+var cherub = "cherubim";
+var codex = "codices";
+var concerto = "concerti";
+var corpus = "corpora";
+var crisis = "crises";
+var criterion = "criteria";
+var curriculum = "curricula";
+var datum = "data";
+var deer = "deer";
+var diagnosis = "diagnoses";
+var die = "dice";
+var dwarf = "dwarfs";
+var echo = "echoes";
+var elf = "elves";
+var elk = "elk";
+var ellipsis = "ellipses";
+var embargo = "embargoes";
+var emphasis = "emphases";
+var erratum = "errata";
+var fez = "fezes";
+var firmware = "firmware";
+var fish = "fish";
+var focus = "foci";
+var foot = "feet";
+var formula = "formulae";
+var fungus = "fungi";
+var gallows = "gallows";
+var genus = "genera";
+var goose = "geese";
+var graffito = "graffiti";
+var grouse = "grouse";
+var half = "halves";
+var hero = "heroes";
+var hoof = "hooves";
+var hypothesis = "hypotheses";
+var index$1 = "indices";
+var knife = "knives";
+var larva = "larvae";
+var leaf = "leaves";
+var libretto = "libretti";
+var life = "lives";
+var loaf = "loaves";
+var locus = "loci";
+var louse = "lice";
+var man = "men";
+var matrix = "matrices";
+var means = "means";
+var medium = "media";
+var memorandum = "memoranda";
+var minutia = "minutiae";
+var moose = "moose";
+var mouse = "mice";
+var nebula = "nebulae";
+var neurosis = "neuroses";
+var news = "news";
+var nucleus = "nuclei";
+var oasis = "oases";
+var offspring = "offspring";
+var opus = "opera";
+var ovum = "ova";
+var ox = "oxen";
+var paralysis = "paralyses";
+var parenthesis = "parentheses";
+var phenomenon = "phenomena";
+var phylum = "phyla";
+var potato = "potatoes";
+var prognosis = "prognoses";
+var quiz = "quizzes";
+var radius = "radii";
+var referendum = "referenda";
+var salmon = "salmon";
+var scarf = "scarves";
+var self = "selves";
+var series = "series";
+var sheep = "sheep";
+var shelf = "shelves";
+var shrimp = "shrimp";
+var species = "species";
+var stimulus = "stimuli";
+var stratum = "strata";
+var swine = "swine";
+var syllabus = "syllabi";
+var symposium = "symposia";
+var synopsis = "synopses";
+var synthesis = "syntheses";
+var tableau = "tableaus";
+var that = "those";
+var thesis = "theses";
+var thief = "thieves";
+var tomato = "tomatoes";
+var tooth = "teeth";
+var trout = "trout";
+var tuna = "tuna";
+var vertebra = "vertebrae";
+var vertex = "vertices";
+var veto = "vetoes";
+var vita = "vitae";
+var vortex = "vortices";
+var wharf = "wharves";
+var wife = "wives";
+var wolf = "wolves";
+var woman = "women";
+var irregularPlurals = {
+	addendum: addendum,
+	aircraft: aircraft,
+	alga: alga,
+	alumna: alumna,
+	alumnus: alumnus,
+	amoeba: amoeba,
+	analysis: analysis,
+	antenna: antenna,
+	antithesis: antithesis,
+	apex: apex,
+	appendix: appendix,
+	axis: axis,
+	bacillus: bacillus,
+	bacterium: bacterium,
+	barracks: barracks,
+	basis: basis,
+	beau: beau,
+	bison: bison,
+	bureau: bureau,
+	cactus: cactus,
+	calf: calf,
+	child: child,
+	cherub: cherub,
+	codex: codex,
+	concerto: concerto,
+	corpus: corpus,
+	crisis: crisis,
+	criterion: criterion,
+	curriculum: curriculum,
+	datum: datum,
+	deer: deer,
+	diagnosis: diagnosis,
+	die: die,
+	dwarf: dwarf,
+	echo: echo,
+	elf: elf,
+	elk: elk,
+	ellipsis: ellipsis,
+	embargo: embargo,
+	emphasis: emphasis,
+	erratum: erratum,
+	fez: fez,
+	firmware: firmware,
+	fish: fish,
+	focus: focus,
+	foot: foot,
+	formula: formula,
+	fungus: fungus,
+	gallows: gallows,
+	genus: genus,
+	goose: goose,
+	graffito: graffito,
+	grouse: grouse,
+	half: half,
+	hero: hero,
+	hoof: hoof,
+	hypothesis: hypothesis,
+	index: index$1,
+	knife: knife,
+	larva: larva,
+	leaf: leaf,
+	libretto: libretto,
+	life: life,
+	loaf: loaf,
+	locus: locus,
+	louse: louse,
+	man: man,
+	matrix: matrix,
+	means: means,
+	medium: medium,
+	memorandum: memorandum,
+	minutia: minutia,
+	moose: moose,
+	mouse: mouse,
+	nebula: nebula,
+	neurosis: neurosis,
+	news: news,
+	nucleus: nucleus,
+	oasis: oasis,
+	offspring: offspring,
+	opus: opus,
+	ovum: ovum,
+	ox: ox,
+	paralysis: paralysis,
+	parenthesis: parenthesis,
+	phenomenon: phenomenon,
+	phylum: phylum,
+	potato: potato,
+	prognosis: prognosis,
+	quiz: quiz,
+	radius: radius,
+	referendum: referendum,
+	salmon: salmon,
+	scarf: scarf,
+	self: self,
+	series: series,
+	sheep: sheep,
+	shelf: shelf,
+	shrimp: shrimp,
+	species: species,
+	stimulus: stimulus,
+	stratum: stratum,
+	swine: swine,
+	syllabus: syllabus,
+	symposium: symposium,
+	synopsis: synopsis,
+	synthesis: synthesis,
+	tableau: tableau,
+	that: that,
+	thesis: thesis,
+	thief: thief,
+	tomato: tomato,
+	tooth: tooth,
+	trout: trout,
+	tuna: tuna,
+	vertebra: vertebra,
+	vertex: vertex,
+	veto: veto,
+	vita: vita,
+	vortex: vortex,
+	wharf: wharf,
+	wife: wife,
+	wolf: wolf,
+	woman: woman,
+	"château": "châteaus",
+	"faux pas": "faux pas"
+};
+
+var irregularPlurals$1 = Object.freeze({
+	addendum: addendum,
+	aircraft: aircraft,
+	alga: alga,
+	alumna: alumna,
+	alumnus: alumnus,
+	amoeba: amoeba,
+	analysis: analysis,
+	antenna: antenna,
+	antithesis: antithesis,
+	apex: apex,
+	appendix: appendix,
+	axis: axis,
+	bacillus: bacillus,
+	bacterium: bacterium,
+	barracks: barracks,
+	basis: basis,
+	beau: beau,
+	bison: bison,
+	bureau: bureau,
+	cactus: cactus,
+	calf: calf,
+	child: child,
+	cherub: cherub,
+	codex: codex,
+	concerto: concerto,
+	corpus: corpus,
+	crisis: crisis,
+	criterion: criterion,
+	curriculum: curriculum,
+	datum: datum,
+	deer: deer,
+	diagnosis: diagnosis,
+	die: die,
+	dwarf: dwarf,
+	echo: echo,
+	elf: elf,
+	elk: elk,
+	ellipsis: ellipsis,
+	embargo: embargo,
+	emphasis: emphasis,
+	erratum: erratum,
+	fez: fez,
+	firmware: firmware,
+	fish: fish,
+	focus: focus,
+	foot: foot,
+	formula: formula,
+	fungus: fungus,
+	gallows: gallows,
+	genus: genus,
+	goose: goose,
+	graffito: graffito,
+	grouse: grouse,
+	half: half,
+	hero: hero,
+	hoof: hoof,
+	hypothesis: hypothesis,
+	index: index$1,
+	knife: knife,
+	larva: larva,
+	leaf: leaf,
+	libretto: libretto,
+	life: life,
+	loaf: loaf,
+	locus: locus,
+	louse: louse,
+	man: man,
+	matrix: matrix,
+	means: means,
+	medium: medium,
+	memorandum: memorandum,
+	minutia: minutia,
+	moose: moose,
+	mouse: mouse,
+	nebula: nebula,
+	neurosis: neurosis,
+	news: news,
+	nucleus: nucleus,
+	oasis: oasis,
+	offspring: offspring,
+	opus: opus,
+	ovum: ovum,
+	ox: ox,
+	paralysis: paralysis,
+	parenthesis: parenthesis,
+	phenomenon: phenomenon,
+	phylum: phylum,
+	potato: potato,
+	prognosis: prognosis,
+	quiz: quiz,
+	radius: radius,
+	referendum: referendum,
+	salmon: salmon,
+	scarf: scarf,
+	self: self,
+	series: series,
+	sheep: sheep,
+	shelf: shelf,
+	shrimp: shrimp,
+	species: species,
+	stimulus: stimulus,
+	stratum: stratum,
+	swine: swine,
+	syllabus: syllabus,
+	symposium: symposium,
+	synopsis: synopsis,
+	synthesis: synthesis,
+	tableau: tableau,
+	that: that,
+	thesis: thesis,
+	thief: thief,
+	tomato: tomato,
+	tooth: tooth,
+	trout: trout,
+	tuna: tuna,
+	vertebra: vertebra,
+	vertex: vertex,
+	veto: veto,
+	vita: vita,
+	vortex: vortex,
+	wharf: wharf,
+	wife: wife,
+	wolf: wolf,
+	woman: woman,
+	default: irregularPlurals
+});
+
+var irregularPlurals$2 = ( irregularPlurals$1 && irregularPlurals$1['default'] ) || irregularPlurals$1;
+
+var index = function (str, plural, count) {
+	if (typeof plural === 'number') {
+		count = plural;
+	}
+
+	if (str in irregularPlurals$2) {
+		plural = irregularPlurals$2[str];
+	} else if (typeof plural !== 'string') {
+		plural = (str.replace(/(?:s|x|z|ch|sh)$/i, '$&e').replace(/([^aeiou])y$/i, '$1ie') + 's')
+			.replace(/i?e?s$/i, function (m) {
+				var isTailLowerCase = str.slice(-1) === str.slice(-1).toLowerCase();
+				return isTailLowerCase ? m.toLowerCase() : m.toUpperCase();
+			});
+	}
+
+	return count === 1 ? str : plural;
+};
+
+function generateId() {
+  return Math.random().toString(36).substr(-5);
+}
+
+Polymer({
+  is: 'simpla-collection-editor',
+
+  properties: {
+
+    items: {
+      type: Array,
+      notify: true
+    },
+
+    as: String,
+
+    active: {
+      type: Boolean,
+      notify: true
+    }
+
+  },
+
+  /**
+   * Tell simpla-collection to remove given item
+   * @param  {Event} e Click event from item to remove
+   * @return {undefined}
+   */
+  _removeItem: function _removeItem(e) {
+    this.splice('items', e.model.index, 1);
+  },
+
+
+  /**
+   * Tell simpla-collection to add a new item
+   * @return {undefined}
+   */
+  _addItem: function _addItem() {
+    this.push('items', { id: generateId() });
+  },
+
+
+  /**
+   * Utility method to open editor
+   * @return {undefined}
+   */
+  _open: function _open() {
+    this.active = true;
+  },
+
+
+  /**
+   * Utility method to close editor
+   * @return {undefined}
+   */
+  _close: function _close() {
+    this.active = false;
+  },
+
+
+  /**
+   * Whether to show the empty content placeholder
+   * @param  {Array} items Items in the collection
+   * @return {undefined}
+   */
+  _showPlaceholder: function _showPlaceholder(items) {
+    return items.value.length === 0;
+  },
+
+
+  /**
+   * Checks whether inline edit button should be hidden
+   * @param  {Array} items    Observable version of items array
+   * @param  {Boolean} active Whether editor is open
+   * @return {Boolean}        Whether to hide edit button
+   */
+  _hideEdit: function _hideEdit(items, active) {
+    return items.value.length === 0 || active;
+  },
+
+
+  /**
+   * Capitalize the first letter of a string
+   * @param  {String} string String to capitalize
+   * @return {String}        Capitalized string
+   */
+  _capitalize: function _capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  },
+
+
+  /**
+   * Pluralize a string
+   * @param  {String} string String to pluralize
+   * @return {String}        Pluralized string
+   */
+  _pluralize: function _pluralize(string) {
+    return index(string, 2);
+  },
+
+
+  /**
+   * Add one to a number
+   * @param {Number} number Number to add one to
+   * @return {Number}       Number with one added
+   */
+  _addOne: function _addOne(number) {
+    return number + 1;
+  }
+});
+
+}());
+</script>
+</dom-module>

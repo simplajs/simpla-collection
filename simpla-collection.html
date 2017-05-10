@@ -1,1 +1,318 @@
-<link rel="import" href="../polymer/polymer.html"> <link rel="import" href="../simpla-element-behavior/simpla-element-behavior.html"> <dom-module id="simpla-collection"> <template> <style>:host{display:block;position:relative}</style> <template is="dom-if" if="[[editable]]"> <simpla-collection-editor items="[[items]]" as="[[as]]" active="{{active}}" data-edit-button-visible$="[[_editButtonVisible]]" on-collection-item-edit="_handleEdit"> </simpla-collection-editor> </template> <slot></slot> </template> <script>!function(){"use strict";function t(){return Math.random().toString(36).substr(-5)}var i=function(t){if(Array.isArray(t)){for(var i=0,e=Array(t.length);i<t.length;i++)e[i]=t[i];return e}return Array.from(t)},e="simpla-collection-editor.html",r={type:"Collection",dataProperties:["items"]};Polymer({is:"simpla-collection",properties:{items:{type:Array,value:[]},as:{type:String,value:"item"},active:{type:Boolean,notify:!0,value:!1},editable:{type:Boolean,observer:"_importEditor",notify:!0,value:!1},_editButtonVisible:Boolean},listeners:{mouseover:"_showEditButton",mouseout:"_hideEditButton"},observers:["_render(items.*)"],behaviors:[SimplaBehaviors.Element(r)],add:function(){this.push("items",{id:t()})},remove:function(t){var i=this.items,e=this.path+"/"+t,r=i.find(function(i){return i.id===t}),o=i.indexOf(r);Simpla.remove(e),this.splice("items",o,1)},swap:function(t,i){var e=this,r=function(t){return e.items.find(function(i){return i.id===t})},o=this.items,n=o.slice(),s=o.indexOf(r(t)),a=o.indexOf(r(i));n[a]=o[s],n[s]=o[a],this.items=n},_render:function(){for(var t=this,i=Polymer.dom(this).querySelector("template"),e=this.items,r=function(i,e){var r=["path","sid","gid"];r.forEach(function(r){Array.prototype.forEach.call(i.querySelectorAll("["+r+"]"),function(i){var o=i.getAttribute(r);i.setAttribute(r,o.replace("["+t.as+"]",e))})})};this.children.length>1;)Polymer.dom(this).removeChild(this.children[1]);e.forEach(function(e,o){var n=document.importNode(i.content,!0);r(n,e.id),Polymer.dom(t).appendChild(n)})},_handleEdit:function(t){var e=t.detail.action,r=t.detail.args;t.stopPropagation(),this[e].apply(this,i(r))},_importEditor:function(t){t&&this.importHref(this.resolveUrl(e))},_showEditButton:function(){this._editButtonVisible=!0},_hideEditButton:function(){this._editButtonVisible=!1}})}(); </script> </dom-module> 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../simpla-element-behavior/simpla-element-behavior.html">
+
+<dom-module id="simpla-collection">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+    </style>
+
+    <template is="dom-if" if="[[editable]]">
+      <simpla-collection-editor items="{{items}}" as="[[as]]" active="{{active}}" data-edit-button-visible$="[[_editButtonVisible]]" on-collection-item-edit="_handleEdit">
+      </simpla-collection-editor>
+    </template>
+
+    <slot></slot>
+  </template>
+
+  <script>(function () {
+'use strict';
+
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var set = function set(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
+var EDITOR_IMPORT = 'simpla-collection-editor.html';
+var SIMPLA_CONFIG = {
+  type: 'Collection',
+  dataProperties: ['items']
+};
+
+function generateId() {
+  return Math.random().toString(36).substr(-5);
+}
+
+Polymer({
+  is: 'simpla-collection',
+
+  properties: {
+
+    /**
+     * Items in the collection
+     * @type {Array}
+     */
+    items: {
+      type: Array,
+      value: []
+    },
+
+    /**
+     * Item name to use throughout
+     * @type {String}
+     */
+    as: {
+      type: String,
+      value: 'item'
+    },
+
+    /**
+     * Whether collection editor is open
+     * @type {Boolean}
+     */
+    active: {
+      type: Boolean,
+      notify: true,
+      value: false
+    },
+
+    /**
+     * Whether collection is editable
+     * @type {Boolean}
+     */
+    editable: {
+      type: Boolean,
+      observer: '_importEditor',
+      notify: true,
+      value: false
+    },
+
+    _editButtonVisible: Boolean
+
+  },
+
+  listeners: {
+    'mouseover': '_showEditButton',
+    'mouseout': '_hideEditButton'
+  },
+
+  observers: ['_render(items.*)'],
+
+  behaviors: [SimplaBehaviors.Element(SIMPLA_CONFIG)],
+
+  /**
+   * Add an item to the collection
+   * @return {undefined}
+   */
+  add: function add() {
+    this.push('items', { id: generateId() });
+  },
+
+
+  /**
+   * Remove an item from the collection,
+   * including any Simpla data associated with it
+   * @param  {String} id Hash ID of the item to remove
+   * @return {undefined}
+   */
+  remove: function remove(id) {
+    var items = this.items,
+        path = this.path + '/' + id,
+        item = items.find(function (item) {
+      return item.id === id;
+    }),
+        itemIndex = items.indexOf(item);
+
+
+    Simpla.remove(path);
+    this.splice('items', itemIndex, 1);
+  },
+
+
+  /**
+   * Swap the position of two items in the collection
+   * @param  {String} a Hash ID of the first item
+   * @param  {String} b Hash ID of the second item
+   * @return {undefined}
+   */
+  swap: function swap(a, b) {
+    var _this = this;
+
+    var getItem = function getItem(id) {
+      return _this.items.find(function (item) {
+        return item.id === id;
+      });
+    };
+
+    var items = this.items,
+        newItems = items.slice(),
+        aIndex = items.indexOf(getItem(a)),
+        bIndex = items.indexOf(getItem(b));
+
+
+    newItems[bIndex] = items[aIndex];
+    newItems[aIndex] = items[bIndex];
+
+    this.items = newItems;
+  },
+
+
+  /**
+   * Render the collection
+   * @return {undefined}
+   */
+  _render: function _render() {
+    var _this2 = this;
+
+    var template = Polymer.dom(this).querySelector('template'),
+        items = this.items;
+
+    var replaceKeyWith = function replaceKeyWith(fragment, hash) {
+      var attributes = ['path', 'sid', 'gid'];
+
+      attributes.forEach(function (attr) {
+        Array.prototype.forEach.call(fragment.querySelectorAll('[' + attr + ']'), function (node) {
+          var magicPath = node.getAttribute(attr);
+          node.setAttribute(attr, magicPath.replace('[' + _this2.as + ']', hash));
+        });
+      });
+    };
+
+    while (this.children.length > 1) {
+      Polymer.dom(this).removeChild(this.children[1]);
+    }
+
+    items.forEach(function (item, i) {
+      var fragment = document.importNode(template.content, true);
+      replaceKeyWith(fragment, item.id);
+      Polymer.dom(_this2).appendChild(fragment);
+    });
+  },
+
+
+  /**
+   * Parse edit events from editor and call appropriate action
+   * @param  {CustomEvent} e Edit event from simpla-collection-editor
+   * @return {undefined}
+   */
+  _handleEdit: function _handleEdit(e) {
+    var action = e.detail.action,
+        args = e.detail.args;
+
+    e.stopPropagation();
+    this[action].apply(this, toConsumableArray(args));
+  },
+
+
+  /**
+   * Import the editor component on editable
+   * @param  {Boolean} editable Whether collection is editable
+   * @return {undefined}
+   */
+  _importEditor: function _importEditor(editable) {
+    if (editable) {
+      this.importHref(this.resolveUrl(EDITOR_IMPORT));
+    }
+  },
+
+
+  /**
+   * Show the inline edit button based on mouseover
+   * More performant to keep button in editor but handle hover with events on mediator
+   * @param  {Event} e Mouseover event
+   * @return {undefined}
+   */
+  _showEditButton: function _showEditButton() {
+    this._editButtonVisible = true;
+  },
+
+
+  /**
+   * Show the inline edit button based on mouseout
+   * More performant to keep button in editor but handle hover with events on mediator
+   * @param  {Event} e Mouseout event
+   * @return {undefined}
+   */
+  _hideEditButton: function _hideEditButton() {
+    this._editButtonVisible = false;
+  }
+});
+
+}());
+</script>
+</dom-module>
