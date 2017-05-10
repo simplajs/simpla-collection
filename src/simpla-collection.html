@@ -14,8 +14,7 @@
         path="[[path]]"
         as="[[as]]"
         items="{{items}}"
-        active="{{active}}"
-        data-edit-button-visible$="[[_editButtonVisible]]">
+        active="{{active}}">
       </simpla-collection-editor>
     </template>
 
@@ -71,20 +70,8 @@
           observer: '_importEditor',
           notify: true,
           value: false
-        },
+        }
 
-        /**
-         * Wether inline edit button is visible
-         * Show-on-hover handled with events rather than CSS
-         * @type {Boolean}
-         */
-        _editButtonVisible: Boolean
-
-      },
-
-      listeners: {
-        'mouseover': '_showEditButton',
-        'mouseout': '_hideEditButton'
       },
 
       observers: [
@@ -132,24 +119,6 @@
         if (editable) {
           this.importHref(this.resolveUrl(EDITOR_IMPORT));
         }
-      },
-
-      /**
-       * Show the inline edit button based on mouseover
-       * @param  {Event} e Mouseover event
-       * @return {undefined}
-       */
-      _showEditButton() {
-        this._editButtonVisible = true;
-      },
-
-      /**
-       * Show the inline edit button based on mouseout
-       * @param  {Event} e Mouseout event
-       * @return {undefined}
-       */
-      _hideEditButton() {
-        this._editButtonVisible = false;
       }
     });
   </script>
