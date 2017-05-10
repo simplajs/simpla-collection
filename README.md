@@ -8,14 +8,14 @@ Simpla-collection lets you create dynamic collections of content in HTML, using 
 <custom-element-demo>
   <template>
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="simpla-collection.html">
-    <link rel="import" href="../simpla-img/simpla-img.html">
-
-    <script src="https://unpkg.com/simpla@2.0.0"></script>
+    <script src="https://unpkg.com/simpla@^2.0.0"></script>
     <script>
       Simpla.init('local');
       Simpla.editable(true);
     </script>
+
+    <link rel="import" href="simpla-collection.html">
+    <link rel="import" href="../simpla-img/simpla-img.html">
 
     <style>
       img {
