@@ -268,9 +268,9 @@
       </a>
 
       <div class="editor__scroller">
-        <sortable-js class="editor__list" on-update="_swapItems">
-          <template is="dom-repeat" items="[[items]]">
-            <div class="item" data-item$="[[item]]">
+        <sortable-js class="editor__list">
+          <template is="dom-repeat" items="{{items}}">
+            <div class="item">
               <iron-icon
                 class="item__drag"
                 icon="simpla-collection:drag-handle">
@@ -307,14 +307,19 @@
   <script>
     import plur from 'plur';
 
-    const ITEM_DATA_ATTR = 'data-item';
+    function generateId() {
+      return Math.random().toString(36).substr(-5);
+    }
 
     Polymer({
       is: 'simpla-collection-editor',
 
       properties: {
 
-        items: Array,
+        items: {
+          type: Array,
+          notify: true
+        },
 
         as: String,
 
@@ -331,15 +336,7 @@
        * @return {undefined}
        */
       _removeItem(e) {
-        let itemData = Polymer.dom(e).rootTarget
-              .closest(`[${ITEM_DATA_ATTR}]`)
-              .getAttribute(ITEM_DATA_ATTR),
-            item = JSON.parse(itemData);
-
-        this.fire('collection-item-edit', {
-          action: 'remove',
-          args: [ item.id ]
-        });
+        this.splice('items', e.model.index, 1);
       },
 
       /**
@@ -347,26 +344,7 @@
        * @return {undefined}
        */
       _addItem() {
-        this.fire('collection-item-edit', {
-          action: 'add',
-          args: []
-        });
-      },
-
-      /**
-       * Tell simpla-collection to swap two items
-       * @param  {CustomEvent} e Update event from SortableJS
-       * @return {undefined}
-       */
-      _swapItems(e) {
-        let { items } = this,
-            itemA = items[e.oldIndex].id,
-            itemB = items[e.newIndex].id;
-
-        this.fire('collection-item-edit', {
-          action: 'add',
-          args: [ itemA, itemB ]
-        });
+        this.push('items', { id: generateId() });
       },
 
       /**
