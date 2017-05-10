@@ -270,7 +270,7 @@
       <div class="editor__scroller">
         <sortable-js class="editor__list">
           <template is="dom-repeat" items="{{items}}">
-            <div class="item" data-item$="[[item]]">
+            <div class="item">
               <iron-icon
                 class="item__drag"
                 icon="simpla-collection:drag-handle">
@@ -306,8 +306,6 @@
   </template>
   <script>
     import plur from 'plur';
-
-    const ITEM_DATA_ATTR = 'data-item';
 
     function generateId() {
       return Math.random().toString(36).substr(-5);
