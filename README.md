@@ -18,6 +18,9 @@ Simpla-collection lets you create dynamic collections of content in HTML, using 
     <link rel="import" href="../simpla-img/simpla-img.html">
 
     <style>
+      body {
+        min-height: 350px
+      }
       img {
         max-width: 15rem;
       }
