@@ -94,50 +94,6 @@
       behaviors: [ SimplaBehaviors.Element(SIMPLA_CONFIG) ],
 
       /**
-       * Add an item to the collection
-       * @return {undefined}
-       */
-      add() {
-        this.push('items', { id: generateId() });
-      },
-
-      /**
-       * Remove an item from the collection,
-       * including any Simpla data associated with it
-       * @param  {String} id Hash ID of the item to remove
-       * @return {undefined}
-       */
-      remove(id) {
-        let { items } = this,
-            path = `${this.path}/${id}`,
-            item = items.find(item => item.id === id),
-            itemIndex = items.indexOf(item);
-
-        Simpla.remove(path);
-        this.splice('items', itemIndex, 1);
-      },
-
-      /**
-       * Swap the position of two items in the collection
-       * @param  {String} a Hash ID of the first item
-       * @param  {String} b Hash ID of the second item
-       * @return {undefined}
-       */
-      swap(a, b) {
-        const getItem = id => this.items.find(item => item.id === id);
-
-        let { items } = this,
-            newItems = items.slice(),
-            aIndex = items.indexOf(getItem(a)),
-            bIndex = items.indexOf(getItem(b));
-
-        newItems[bIndex] = items[aIndex];
-        newItems[aIndex] = items[bIndex];
-
-        this.items = newItems;
-      },
-
-      /**
        * Render the collection
        * @return {undefined}
        */
