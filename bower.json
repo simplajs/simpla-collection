@@ -2,7 +2,7 @@
   "name": "simpla-collection",
   "version": "0.0.0",
   "authors": [
-    "Simpla &lt;friends@simpla.io&gt;"
+    "Simpla <friends@simpla.io>"
   ],
   "description": "Create dynamic collections of content in HTML with Simpla",
   "keywords": [

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "gulp test:local"
   },
-  "author": "Simpla &lt;friends@simpla.io&gt;",
+  "author": "Simpla <friends@simpla.io>",
   "license": "MIT",
   "keywords": [
     "web components",
