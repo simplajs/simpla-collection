@@ -29,11 +29,10 @@
         --iron-icon-width: 1em;
         --iron-icon-height: 1em;
         display: block;
+        position: relative;
         position: sticky;
         top: 0;
-        height: 0;
         width: 100%;
-        overflow: visible;
         z-index: var(--simpla-on-top);
         font-size: var(--simpla-scale-0);
         font-family: var(--simpla-font-family);
@@ -42,17 +41,15 @@
                  font-smoothing: antialiased;
       }
 
-      :host([data-placeholder]) {
-        height: auto;
-      }
-
       /**
        * Inline edit button
        */
       .edit {
         @apply --simpla-button;
         display: flex;
+        position: absolute;
         align-items: center;
+        top: 0;
         color: white;
         background: var(--simpla-grey-700);
         font-size: var(--simpla-scale-000);
@@ -393,12 +390,6 @@
        */
       _showPlaceholder(items) {
         let empty = items.value.length === 0;
-
-        if (empty) {
-          this.setAttribute('data-placeholder', '');
-        } else {
-          this.removeAttribute('data-placeholder');
-        }
 
         return empty;
       },
