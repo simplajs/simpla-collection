@@ -92,15 +92,17 @@
             expect(itemsAfterAddition).to.have.length(itemsBeforeAddition.length - 1);
           });
 
-          it('renders in the same order as the items', function() {
-            var renderedItems = getRenderedItemsFor(component);
+          it('renders in the same order as the items order', function() {
+            var itemsBeforeSwap = getRenderedItemsFor(component),
+                itemsAfterSwap;
 
-            [].forEach.call(renderedItems, function(element, i) {
-              var actualPath = element.getAttribute('path'),
-                  expectedPath = expectedPathForIndex(i, component.items);
+            // Move the 1st item to be the 0th item: [ a, b ] -> [ a ] -> [ b, a ]
+            component.unshift('items', component.splice('items', 1, 1)[0]);
 
-              expect(actualPath).to.equal(expectedPath);
-            });
+            itemsAfterSwap = getRenderedItemsFor(component);
+
+            expect(itemsAfterSwap[0].outerHTML).to.equal(itemsBeforeSwap[1].outerHTML);
+            expect(itemsAfterSwap[1].outerHTML).to.equal(itemsBeforeSwap[0].outerHTML);
           });
         });
 
