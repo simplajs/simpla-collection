@@ -23,6 +23,7 @@
 
   <script>
     const EDITOR_IMPORT = 'simpla-collection-editor.html',
+          MAGIC_ATTRS = [ 'path', 'sid', 'gid' ],
           SIMPLA_CONFIG = {
             type: 'Collection',
             dataProperties: [ 'items' ]
@@ -85,30 +86,37 @@
        * @return {undefined}
        */
       _render() {
-        let safeDom = Polymer.dom(this),
-            template = safeDom.querySelector('template'),
-            items = this.items;
+        let dom = Polymer.dom(this),
+            template = dom.querySelector('template'),
+            key = `[${this.as}]`,
+            toFragment;
 
-        const replaceKeyWith = (fragment, hash) => {
-          let attributes = [ 'path', 'sid', 'gid' ];
-
-          attributes.forEach(attr => {
-            Array.prototype.forEach.call(fragment.querySelectorAll(`[${attr}]`), node => {
-              let magicPath = node.getAttribute(attr);
-              node.setAttribute(attr, magicPath.replace(`[${this.as}]`, hash));
-            });
-          });
-        }
-
-        while (safeDom.children.length > 1) {
-          safeDom.removeChild(safeDom.children[1]);
-        }
-
-        items.forEach((item, i) => {
+        toFragment = item => {
           let fragment = document.importNode(template.content, true);
-          replaceKeyWith(fragment, item.id);
-          safeDom.appendChild(fragment);
-        });
+
+          MAGIC_ATTRS.forEach(attr => {
+            let transformNode = node => {
+              let value = node.getAttribute(attr);
+              node.setAttribute(attr, value.replace(key, item.id));
+            };
+
+            [].forEach.call(
+              fragment.querySelectorAll(`[${attr}]`),
+              transformNode
+            );
+          });
+
+          return fragment;
+        };
+
+        // TODO: This is naïve. Ideally we should preserve as much DOM as possible
+        dom.children
+          .filter(child => child !== template)
+          .forEach(child => dom.removeChild(child));
+
+        this.items
+          .map(toFragment)
+          .forEach(fragment => dom.appendChild(fragment));
 
         Polymer.dom.flush();
       },
