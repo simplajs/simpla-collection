@@ -25,7 +25,31 @@
       <template>
         <simpla-collection path="/test">
           <template>
-            <div class="item" path="/test/[item]"></div>
+            <div
+              class="item"
+
+              data-original-sid="[item]"
+              sid="[item]"
+
+              data-original-gid="[item]"
+              gid="[item]"
+
+              data-original-path="/test/[item]"
+              path="/test/[item]"></div>
+          </template>
+        </simpla-collection>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="custom-key">
+      <template>
+        <simpla-collection as="image" path="/test">
+          <template>
+            <div
+              class="item"
+
+              data-original-path="/test/[image]"
+              path="/test/[image]"></div>
           </template>
         </simpla-collection>
       </template>
@@ -39,13 +63,8 @@
             { id: 'second' },
           ];
 
-      function expectedPathForIndex(n, items) {
-        items = items || ITEMS();
-        return '/test/' + items[n].id;
-      }
-
       function getRenderedItemsFor(component) {
-        return component.querySelectorAll('.item');
+        return [].slice.call(component.querySelectorAll('.item'));
       }
 
       describe('<simpla-collection>', function() {
@@ -108,19 +127,63 @@
 
         describe('templating', function() {
 
-          xit('replaces the [item] key in paths with the item id', function() {
+          function checkAttributeWasReplaced(element, name, from, to) {
+            var actualValue = element.getAttribute(name),
+                originalValue = element.getAttribute('data-original-'+name);
+                expectedValue = originalValue.replace(from, to);
 
+            expect(actualValue).to.equal(expectedValue);
+          }
+
+          beforeEach(function() {
+            component.items = ITEMS();
           });
 
-          xit('replaces the [item] key in SIDs and GIDs with the item id', function() {
+          it('replaces the [item] key in paths with the item id', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
+            renderedItems.forEach(function(item, i) {
+              checkAttributeWasReplaced(
+                item,
+                'path',
+                '[item]',
+                component.items[i].id
+              );
+            });
           });
 
-          xit('replaces the item key in paths when a custom item name is set', function() {
+          it('replaces the [item] key in SIDs and GIDs with the item id', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
+            [ 'sid', 'gid' ].forEach(function(attributeName) {
+              renderedItems.forEach(function(item, i) {
+                checkAttributeWasReplaced(
+                  item,
+                  attributeName,
+                  '[item]',
+                  component.items[i].id
+                );
+              });
+            });
           });
 
-        })
+          it('replaces the item key in paths when a custom item name is set', function() {
+            var customKeyComponent = fixture('custom-key'),
+                renderedItems;
+
+            customKeyComponent.items = ITEMS();
+            renderedItems = getRenderedItemsFor(customKeyComponent);
+
+            renderedItems.forEach(function(item, i) {
+              checkAttributeWasReplaced(
+                item,
+                'path',
+                '[' + customKeyComponent.as + ']',
+                customKeyComponent.items[i].id
+              );
+            });
+          });
+        });
 
         describe('editor', function() {
 
