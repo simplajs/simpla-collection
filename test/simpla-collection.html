@@ -25,18 +25,28 @@
       <template>
         <simpla-collection path="/test">
           <template>
-            <div path="/test/[item]"></div>
+            <div class="item" path="/test/[item]"></div>
           </template>
         </simpla-collection>
       </template>
     </test-fixture>
     <script>
-      const COLLECTION_PATH = '/test',
-            EDITOR_COMPONENT = 'simpla-collection-editor.html',
-            ITEMS = () => [
-              { id: 'first' },
-              { id: 'second' },
-            ];
+      var COLLECTION_PATH = '/test',
+          EDITOR_COMPONENT_NAME = 'simpla-collection-editor',
+          EDITOR_COMPONENT = 'simpla-collection-editor.html',
+          ITEMS = () => [
+            { id: 'first' },
+            { id: 'second' },
+          ];
+
+      function expectedPathForIndex(n, items) {
+        items = items || ITEMS();
+        return '/test/' + items[n].id;
+      }
+
+      function getRenderedItemsFor(component) {
+        return component.querySelectorAll('.item');
+      }
 
       describe('<simpla-collection>', function() {
         var component;
@@ -52,26 +62,46 @@
 
         describe('rendering', function() {
 
-          xit('renders the template for all items in the collection', function() {
-          });
-
-          xit('properly updates rendered DOM when an item is added', function() {
+          beforeEach(function() {
             component.items = ITEMS();
-
-            component.items = ITEMS().push({ id: 'third' });
-
           });
 
-          xit('properly updates rendered DOM when an item is removed', function() {
-            component.items = ITEMS();
+          it('renders the template for all items in the collection', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
-            component.items = ITEMS().slice(1,1);
+            expect(renderedItems).to.have.length(ITEMS().length);
           });
 
-          xit('property updates rendered DOM when two items are swapped', function() {
+          it('properly updates rendered DOM when an item is added', function() {
+            var itemsBeforeAddition = getRenderedItemsFor(component),
+                itemsAfterAddition;
 
-          })
+            component.push('items', { id: 'some-item-id' });
+            itemsAfterAddition = getRenderedItemsFor(component);
 
+            expect(itemsAfterAddition).to.have.length(itemsBeforeAddition.length + 1);
+          });
+
+          it('properly updates rendered DOM when an item is removed', function() {
+            var itemsBeforeAddition = getRenderedItemsFor(component),
+                itemsAfterAddition;
+
+            component.pop('items');
+            itemsAfterAddition = getRenderedItemsFor(component);
+
+            expect(itemsAfterAddition).to.have.length(itemsBeforeAddition.length - 1);
+          });
+
+          it('renders in the same order as the items', function() {
+            var renderedItems = getRenderedItemsFor(component);
+
+            [].forEach.call(renderedItems, function(element, i) {
+              var actualPath = element.getAttribute('path'),
+                  expectedPath = expectedPathForIndex(i, component.items);
+
+              expect(actualPath).to.equal(expectedPath);
+            });
+          });
         });
 
         describe('templating', function() {
