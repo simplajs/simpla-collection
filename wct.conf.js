@@ -1,7 +1,7 @@
 module.exports = {
   'plugins': {
     'local': {
-      'browsers': [ 'chrome' ]
+      'browsers': [ 'chrome', 'firefox' ]
     }
   }
 }

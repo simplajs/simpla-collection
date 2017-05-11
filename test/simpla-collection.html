@@ -5,7 +5,7 @@
     <title>simpla-collection</title>
 
     <!-- Import WCT-->
-    <script src="https://unpkg.com/webcomponents.js/@^0.7.24/webcomponents-lite.min.js"></script>
+    <script src="https://unpkg.com/webcomponents.js@^0.7.24/webcomponents-lite.min.js"></script>
     <link rel="import" href="../../test-fixture/test-fixture.html">
     <script src="../../web-component-tester/browser.js"></script>
 
@@ -25,18 +25,47 @@
       <template>
         <simpla-collection path="/test">
           <template>
-            <div path="/test/[item]"></div>
+            <div
+              class="item"
+
+              data-original-sid="[item]"
+              sid="[item]"
+
+              data-original-gid="[item]"
+              gid="[item]"
+
+              data-original-path="/test/[item]"
+              path="/test/[item]"></div>
+          </template>
+        </simpla-collection>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="custom-key">
+      <template>
+        <simpla-collection as="image" path="/test">
+          <template>
+            <div
+              class="item"
+
+              data-original-path="/test/[image]"
+              path="/test/[image]"></div>
           </template>
         </simpla-collection>
       </template>
     </test-fixture>
     <script>
-      const COLLECTION_PATH = '/test',
-            EDITOR_COMPONENT = 'simpla-collection-editor.html',
-            ITEMS = () => [
-              { id: 'first' },
-              { id: 'second' },
-            ];
+      var COLLECTION_PATH = '/test',
+          EDITOR_COMPONENT_NAME = 'simpla-collection-editor',
+          EDITOR_COMPONENT = 'simpla-collection-editor.html',
+          ITEMS = () => [
+            { id: 'first' },
+            { id: 'second' },
+          ];
+
+      function getRenderedItemsFor(component) {
+        return [].slice.call(component.querySelectorAll('.item'));
+      }
 
       describe('<simpla-collection>', function() {
         var component;
@@ -52,47 +81,115 @@
 
         describe('rendering', function() {
 
-          xit('renders the template for all items in the collection', function() {
-          });
-
-          xit('properly updates rendered DOM when an item is added', function() {
+          beforeEach(function() {
             component.items = ITEMS();
-
-            component.items = ITEMS().push({ id: 'third' });
-
           });
 
-          xit('properly updates rendered DOM when an item is removed', function() {
-            component.items = ITEMS();
+          it('renders the template for all items in the collection', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
-            component.items = ITEMS().slice(1,1);
+            expect(renderedItems).to.have.length(ITEMS().length);
           });
 
-          xit('property updates rendered DOM when two items are swapped', function() {
+          it('properly updates rendered DOM when an item is added', function() {
+            var itemsBeforeAddition = getRenderedItemsFor(component),
+                itemsAfterAddition;
 
-          })
+            component.push('items', { id: 'some-item-id' });
+            itemsAfterAddition = getRenderedItemsFor(component);
 
+            expect(itemsAfterAddition).to.have.length(itemsBeforeAddition.length + 1);
+          });
+
+          it('properly updates rendered DOM when an item is removed', function() {
+            var itemsBeforeAddition = getRenderedItemsFor(component),
+                itemsAfterAddition;
+
+            component.pop('items');
+            itemsAfterAddition = getRenderedItemsFor(component);
+
+            expect(itemsAfterAddition).to.have.length(itemsBeforeAddition.length - 1);
+          });
+
+          it('renders in the same order as the items order', function() {
+            var itemsBeforeSwap = getRenderedItemsFor(component),
+                itemsAfterSwap;
+
+            // Move the 1st item to be the 0th item: [ a, b ] -> [ a ] -> [ b, a ]
+            component.unshift('items', component.splice('items', 1, 1)[0]);
+
+            itemsAfterSwap = getRenderedItemsFor(component);
+
+            expect(itemsAfterSwap[0].outerHTML).to.equal(itemsBeforeSwap[1].outerHTML);
+            expect(itemsAfterSwap[1].outerHTML).to.equal(itemsBeforeSwap[0].outerHTML);
+          });
         });
 
         describe('templating', function() {
 
-          xit('replaces the [item] key in paths with the item id', function() {
+          function checkAttributeWasReplaced(element, name, from, to) {
+            var actualValue = element.getAttribute(name),
+                originalValue = element.getAttribute('data-original-'+name);
+                expectedValue = originalValue.replace(from, to);
 
+            expect(actualValue).to.equal(expectedValue);
+          }
+
+          beforeEach(function() {
+            component.items = ITEMS();
           });
 
-          xit('replaces the [item] key in SIDs and GIDs with the item id', function() {
+          it('replaces the [item] key in paths with the item id', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
+            renderedItems.forEach(function(item, i) {
+              checkAttributeWasReplaced(
+                item,
+                'path',
+                '[item]',
+                component.items[i].id
+              );
+            });
           });
 
-          xit('replaces the item key in paths when a custom item name is set', function() {
+          it('replaces the [item] key in SIDs and GIDs with the item id', function() {
+            var renderedItems = getRenderedItemsFor(component);
 
+            [ 'sid', 'gid' ].forEach(function(attributeName) {
+              renderedItems.forEach(function(item, i) {
+                checkAttributeWasReplaced(
+                  item,
+                  attributeName,
+                  '[item]',
+                  component.items[i].id
+                );
+              });
+            });
           });
 
-        })
+          it('replaces the item key in paths when a custom item name is set', function() {
+            var customKeyComponent = fixture('custom-key'),
+                renderedItems;
+
+            customKeyComponent.items = ITEMS();
+            renderedItems = getRenderedItemsFor(customKeyComponent);
+
+            renderedItems.forEach(function(item, i) {
+              checkAttributeWasReplaced(
+                item,
+                'path',
+                '[' + customKeyComponent.as + ']',
+                customKeyComponent.items[i].id
+              );
+            });
+          });
+        });
 
         describe('editor', function() {
 
-          it('imports the editor component when editable is true', function() {
+          // TODO: This should be replaced with a more stable test. This is
+          //  currently disabled as it doesn't produce consistent results
+          xit('imports the editor component when editable is true', function() {
             Simpla.editable(true);
             expect(document.head.querySelector('link[href$="' + EDITOR_COMPONENT + '"]')).to.be.ok;
           });

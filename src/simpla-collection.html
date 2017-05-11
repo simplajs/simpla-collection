@@ -85,7 +85,8 @@
        * @return {undefined}
        */
       _render() {
-        let template = Polymer.dom(this).querySelector('template'),
+        let safeDom = Polymer.dom(this),
+            template = safeDom.querySelector('template'),
             items = this.items;
 
         const replaceKeyWith = (fragment, hash) => {
@@ -99,15 +100,17 @@
           });
         }
 
-        while (this.children.length > 1) {
-          Polymer.dom(this).removeChild(this.children[1]);
+        while (safeDom.children.length > 1) {
+          safeDom.removeChild(safeDom.children[1]);
         }
 
         items.forEach((item, i) => {
           let fragment = document.importNode(template.content, true);
           replaceKeyWith(fragment, item.id);
-          Polymer.dom(this).appendChild(fragment);
+          safeDom.appendChild(fragment);
         });
+
+        Polymer.dom.flush();
       },
 
       /**
