@@ -65,7 +65,7 @@ Import simpla-collection into the `<head>` of your document
 <link rel="import" href="/bower_components/simpla-collection/simpla-collection.html">
 ```
 
-And then use it on your page wherever you want to create a collection of items. Specify a content path (where the collection's data will be stored on Simpla's API) in a `path` attribute. Define the template for the items in your collection in a `<template>` element inside simpla-collection. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
+And then use it on your page wherever you want to create a collection of items. Specify a content path (where the collection's data will be stored on Simpla's API) in a `path` attribute. Define the template for your items in a `<template>` inside simpla-collection. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
 
 ```html
 <simpla-collection path="/collection">
