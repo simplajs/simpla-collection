@@ -1,5 +1,5 @@
 # Simpla Collection
-![Version][bower-badge] [![Build status][travis-badge]][travis-url] ![Size][size-badge] [![Published][webcomponents-badge]][webcomponents-url] [![Simpla slack group][slack-badge]][slack-url]
+[![Build status][travis-badge]][travis-url] ![Size][size-badge] ![Version][bower-badge] [![Published][webcomponents-badge]][webcomponents-url] [![Simpla slack group][slack-badge]][slack-url]
 
 Simpla-collection lets you create dynamic collections of content in HTML, using the Simpla content system. It consumes a HTML template, which users can add, remove, and reorder instances of on the frontend.
 
