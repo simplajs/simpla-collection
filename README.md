@@ -1,7 +1,7 @@
 # Simpla Collection
 [![Build status][travis-badge]][travis-url] ![Size][size-badge] ![Version][bower-badge] [![Published][webcomponents-badge]][webcomponents-url] [![Simpla slack group][slack-badge]][slack-url]
 
-Simpla-collection lets you create dynamic collections of content in HTML, using the Simpla content system. It consumes a HTML template, which users can add, remove, and reorder instances of on the frontend.
+Simpla-collection lets you create dynamic collections of content in HTML. It consumes a HTML template, which users can add, remove, and reorder instances of inline on your page. It's built on the [Simpla][simpla] content system.
 
 <!---
 ```
@@ -41,31 +41,34 @@ Simpla-collection lets you create dynamic collections of content in HTML, using 
 </simpla-collection>
 ```
 
+### Table of contents
+
+- [Installation and setup](#installation-and-setup)
+- [Editing a collection](#editing-a-collection)
+- [Saving collections](#saving-collections)
+- [Using simpla-paths](#using-simpla-paths)
+- [Custom item names](#custom-item-names)
+- [Collection data model](#collection-data-model)
+- [API reference](#api-reference)
+  - [Properties](#properties)
+  - [Events](#events)
+- [Contributing](#contributing)
+
 ## Installation and setup
 
 Install simpla-collection with Bower (Yarn support coming soon)
 
 ```sh
-$ bower install simpla-collection --save
+$ bower i simpla-collection --save
 ```
 
-Then include the Simpla library and setup a project (read more about [setting up Simpla](https://www.simpla.io/docs/guides/get-started))
-
-```html
-<script src="https://unpkg.com/simpla@^2.0.0"></script>
-<script>
-  // TODO: replace 'project-id' with your project ID
-  Simpla.init('project-id')
-</script>
-```
-
-Import simpla-collection into the `<head>` of your document
+[Setup Simpla][setup-simpla] on your page, then import simpla-collection into your `<head>`
 
 ```html
 <link rel="import" href="/bower_components/simpla-collection/simpla-collection.html">
 ```
 
-And then use it on your page wherever you want to create a collection of items. Specify a content path (where the collection's data will be stored on Simpla's API) in a `path` attribute. Define the template for your items in a `<template>` inside simpla-collection. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
+Use the `<simpla-collection>` element wherever you want to create a collection of items. Define the item template in a `<template>` inside simpla-collection. Give each collection a unique `path`, where it will store its content in your project. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
 
 ```html
 <simpla-collection path="/collection">
@@ -73,14 +76,6 @@ And then use it on your page wherever you want to create a collection of items. 
     <img is="simpla-img" path="/collection/[item]">
   </template>
 </simpla-collection>
-```
-
-### Polyfills for cross-browser support
-
-`simpla-collection` relies on emerging standards, for full cross-browser support make sure you include the [Web Components Lite](https://github.com/webcomponents/webcomponentsjs) polyfill.
-
-```html
-<script src="https://unpkg.com/webcomponents.js@^0.7.24/webcomponents-lite.min.js" async></script>
 ```
 
 ## Editing a collection
@@ -101,8 +96,6 @@ Simpla.editable(true);
 
 Entering edit mode with Simpla is the recommended way to edit collections. It ensures all elements on a page remain in sync and updates Simpla's public `'editable'` state, which other elements may rely on.
 
-> If you include the [simpla-admin](https://webcomponents.org/element/SimplaElements/simpla-admin) component on your page, you can also enter edit mode by adding #edit to the end of your URL
-
 ## Saving collections
 
 Save a `simpla-collection` by calling Simpla's `save` method, which will save all modified content on the page. It returns a promise.
@@ -112,9 +105,7 @@ Save a `simpla-collection` by calling Simpla's `save` method, which will save al
 Simpla.save();
 ```
 
-Note you must be authenticated before saving content - either login with `simpla-admin` or the `Simpla.login()` method.
-
-> If you have included the [simpla-admin](http://webcomponents.org/element/SimplaElements/simpla-admin) component on your site, you can save content by entering edit mode and just pressing the 'save' button.
+> You must be authenticated with Simpla before saving content
 
 ## Using simpla-paths
 
@@ -214,15 +205,17 @@ If you find any issues with simpla-collection please report them! If you'd like 
 
 ***
 
-MIT © Simpla
+MIT © [Simpla][simpla]
 
+[simpla]: https://www.simpla.io
+[setup-simpla]: https://www.simpla.io/docs/guides/get-started
 [bower-badge]: https://img.shields.io/bower/v/simpla-collection.svg
 [bowerlicense-badge]: https://img.shields.io/bower/l/simpla-collection.svg
 [travis-badge]: https://img.shields.io/travis/SimplaElements/simpla-collection.svg
 [travis-url]: https://travis-ci.org/SimplaElements/simpla-collection
 [bowerdeps-badge]: https://img.shields.io/gemnasium/SimplaElements/simpla-collection.svg
 [bowerdeps-url]: https://gemnasium.com/bower/simpla-collection
-[size-badge]: https://badges.herokuapp.com/size/github/SimplaElements/simpla-collection/master/simpla-collection.html?gzip=true
+[size-badge]: http://img.badgesize.io/SimplaElements/simpla-collection/master/simpla-collection.html?compression=gzip&label=render_bundle_%28gzip%29
 [webcomponents-badge]: https://img.shields.io/badge/webcomponents.org-published-blue.svg
 [webcomponents-url]: https://www.webcomponents.org/element/SimplaElements/simpla-collection
 [slack-badge]: http://slack.simpla.io/badge.svg
