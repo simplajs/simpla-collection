@@ -55,7 +55,7 @@ $ bower i simpla-collection --save
 <link rel="import" href="/bower_components/simpla-collection/simpla-collection.html">
 ```
 
-Use the `<simpla-collection>` element wherever you want to create a collection of items. Define the item template in a `<template>` inside simpla-collection. Give each collection a unique `path`, where it will store its content in your project. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
+Use `<simpla-collection>` wherever you want to create a collection of items. Define the item template in a `<template>` inside simpla-collection. Give each collection a unique `path`, where it will store its content in your project. Simpla-collection also exposes an `[item]` key to use in the paths of Simpla elements inside your template.
 
 ```html
 <simpla-collection path="/collection">
@@ -159,11 +159,12 @@ A single item ID (eg: `'dbuwz'`) would map to the following paths:
 
 Property      | Type    | Default           | Description                                                   
 ------------- | ------- | ----------------- | -----------                                                   
+`path`        | String  | `undefined`       | Path to the data for the collection on Simpla's API
 `items`       | Array   | `[]`              | Array of the items in the collection, saved to Simpla's API
 `as`          | Array   | `'item'`          | Item name/key used throughout simpla-collection
-`path`        | String  | `undefined`       | Path to the data for the collection on Simpla's API
 `editable`    | Boolean | `false`           | Whether the collection is editable                                 
 `active`      | Boolean | `false`           | Whether the collection editor is open                   
+`loaded`      | Boolean | `false`           | Whether the collection has loaded and stamped content
 
 Properties can be set either directly with JavaScript or as attributes on the element
 
@@ -185,6 +186,7 @@ Event              | Description
 `as-changed`       | Fired whenever the `as` property changes      
 `editable-changed` | Fired whenever the `editable` property changes 
 `active-changed`   | Fired whenever the `active` property changes   
+`loaded-changed`   | Fired whenever the `loaded` property changes   
 
 ## Contributing
 
