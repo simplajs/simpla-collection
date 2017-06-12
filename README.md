@@ -41,19 +41,6 @@ Simpla-collection lets you create dynamic collections of content in HTML. It con
 </simpla-collection>
 ```
 
-### Table of contents
-
-- [Installation and setup](#installation-and-setup)
-- [Editing a collection](#editing-a-collection)
-- [Saving collections](#saving-collections)
-- [Using simpla-paths](#using-simpla-paths)
-- [Custom item names](#custom-item-names)
-- [Collection data model](#collection-data-model)
-- [API reference](#api-reference)
-  - [Properties](#properties)
-  - [Events](#events)
-- [Contributing](#contributing)
-
 ## Installation and setup
 
 Install simpla-collection with Bower (Yarn support coming soon)
