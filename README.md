@@ -41,7 +41,7 @@ Simpla-collection lets you create dynamic collections of content in HTML. It con
 </simpla-collection>
 ```
 
-## Installation and setup
+## Installation & usage
 
 Install simpla-collection with Bower (Yarn support coming soon)
 
@@ -161,7 +161,7 @@ Property      | Type    | Default           | Description
 ------------- | ------- | ----------------- | -----------                                                   
 `path`        | String  | `undefined`       | Path to the data for the collection on Simpla's API
 `items`       | Array   | `[]`              | Array of the items in the collection, saved to Simpla's API
-`as`          | Array   | `'item'`          | Item name/key used throughout simpla-collection
+`as`          | String  | `'item'`          | Item name/key used throughout simpla-collection
 `editable`    | Boolean | `false`           | Whether the collection is editable                                 
 `active`      | Boolean | `false`           | Whether the collection editor is open                   
 `loaded`      | Boolean | `false`           | Whether the collection has loaded and stamped content
