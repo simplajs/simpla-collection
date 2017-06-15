@@ -41,7 +41,23 @@ Simpla-collection lets you create dynamic collections of content in HTML. It con
 </simpla-collection>
 ```
 
-## Installation & usage
+### Contents
+
+- [Installation and setup](#installation-and-setup)
+- [Editing a collection](#editing-a-collection)
+- [Saving collections](#saving-collections)
+- [Using simpla-paths](#using-simpla-paths)
+- [Custom item names](#custom-item-names)
+- [Collection data model](#collection-data-model)
+- [Contributing](#contributing)
+
+### Resources
+
+- [API reference][api]
+- [Demo][demo]
+- [License][license]
+
+## Installation and setup
 
 Install simpla-collection with Bower (Yarn support coming soon)
 
@@ -49,7 +65,7 @@ Install simpla-collection with Bower (Yarn support coming soon)
 $ bower i simpla-collection --save
 ```
 
-[Setup Simpla][setup-simpla] on your page, then import simpla-collection into your `<head>`
+[Setup Simpla][simpla-setup] on your page, then import simpla-collection into your `<head>`
 
 ```html
 <link rel="import" href="/bower_components/simpla-collection/simpla-collection.html">
@@ -153,41 +169,6 @@ A single item ID (eg: `'dbuwz'`) would map to the following paths:
 /gallery/dbuwz/caption
 ```
 
-## API reference
-
-### Properties
-
-Property      | Type    | Default           | Description                                                   
-------------- | ------- | ----------------- | -----------                                                   
-`path`        | String  | `undefined`       | Path to the data for the collection on Simpla's API
-`items`       | Array   | `[]`              | Array of the items in the collection, saved to Simpla's API
-`as`          | String  | `'item'`          | Item name/key used throughout simpla-collection
-`editable`    | Boolean | `false`           | Whether the collection is editable                                 
-`active`      | Boolean | `false`           | Whether the collection editor is open                   
-`loaded`      | Boolean | `false`           | Whether the collection has loaded and stamped content
-
-Properties can be set either directly with JavaScript or as attributes on the element
-
-```html
-<simpla-collection path="/collection">
-  <template>...</template>
-</simpla-collection>
-
-<script>
-  document.querySelector('simpla-collection').editable = true;
-</script>
-```
-
-### Events
-
-Event              | Description                                    
------------------- | -----------                                    
-`items-changed`    | Fired whenever the `items` property changes      
-`as-changed`       | Fired whenever the `as` property changes      
-`editable-changed` | Fired whenever the `editable` property changes 
-`active-changed`   | Fired whenever the `active` property changes   
-`loaded-changed`   | Fired whenever the `loaded` property changes   
-
 ## Contributing
 
 If you find any issues with simpla-collection please report them! If you'd like to see a new feature in supported file an issue or let us know in Simpla's public [Slack group](https://slack.simpla.io). We also happily accept PRs. 
@@ -197,7 +178,12 @@ If you find any issues with simpla-collection please report them! If you'd like 
 MIT © [Simpla][simpla]
 
 [simpla]: https://www.simpla.io
-[setup-simpla]: https://www.simpla.io/docs/guides/get-started
+[simpla-setup]: https://www.simpla.io/docs/guides/get-started
+
+[api]: https://www.webcomponents.org/element/SimplaElements/simpla-collection/page/API.md
+[demo]: https://www.webcomponents.org/element/SimplaElements/simpla-collection/demo/demo/index.html
+[license]: https://github.com/SimplaElements/simpla-collection/blob/master/LICENSE
+
 [bower-badge]: https://img.shields.io/bower/v/simpla-collection.svg
 [bowerlicense-badge]: https://img.shields.io/bower/l/simpla-collection.svg
 [travis-badge]: https://img.shields.io/travis/SimplaElements/simpla-collection.svg

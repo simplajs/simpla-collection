@@ -13,6 +13,9 @@
   "main": "simpla-collection.html",
   "license": "MIT",
   "homepage": "https://github.com/SimplaElements/simpla-collection/",
+  "pages": {
+    "API Reference": "API.md"
+  },
   "demos": {
     "Demo": "demo/index.html"
   },
