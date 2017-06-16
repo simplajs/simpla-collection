@@ -8,6 +8,7 @@ Property   | Type      | Default     | Description
 `items`    | `Array`   | `[]`        | Array of the items in the collection
 `as`       | `String`  | `'item'`    | Item name/key used throughout simpla-collection             
 `editable` | `Boolean` | `false`     | Whether the collection is editable                             
+`readonly` | `Boolean` | `false`     | Whether the collection is able to become editable                                 
 `active`   | `Boolean` | `false`     | Whether the collection is currently being edited               
 `loaded`   | `Boolean` | `false`     | Whether the collection content has been loaded from Simpla     
 

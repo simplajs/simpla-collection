@@ -49,6 +49,7 @@ Simpla-collection lets you create dynamic collections of content in HTML. It con
 - [Using simpla-paths](#using-simpla-paths)
 - [Custom item names](#custom-item-names)
 - [Collection data model](#collection-data-model)
+- [Readonly](#readonly)
 - [Contributing](#contributing)
 
 ### Resources
@@ -167,6 +168,16 @@ A single item ID (eg: `'dbuwz'`) would map to the following paths:
 ```
 /gallery/dbuwz/img
 /gallery/dbuwz/caption
+```
+
+## Readonly
+
+Simpla-collection has a `readonly` property that stops it from becoming editable, even if Simpla is in edit mode or you try to set `editable` on the element directly. This is useful for using simpla-collection to purely consume and display content from Simpla's API.
+
+```html
+<simpla-collection path="/collection" readonly>
+  <template>...</template>
+</simpla-collection>
 ```
 
 ## Contributing
