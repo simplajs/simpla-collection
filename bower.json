@@ -41,5 +41,8 @@
     "simpla-img": "^1.0.9",
     "simpla-text": "^1.0.3",
     "simpla-paths": "^1.0.1"
+  },
+  "resolutions": {
+    "polymer": "^1.8.0"
   }
 }
