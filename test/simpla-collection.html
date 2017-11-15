@@ -54,6 +54,23 @@
         </simpla-collection>
       </template>
     </test-fixture>
+
+    <test-fixture id="nested-templates">
+        <template>
+          <simpla-collection as="outer" path="/test">
+            <template>
+              <simpla-collection as="inner" path="/test">
+                <template>
+                  <div
+                    class="item"
+
+                    path="/test/[outer]/[inner]"></div>
+                </template>
+              </simpla-collection>
+            </template>
+          </simpla-collection>
+        </template>
+      </test-fixture>
     <script>
       var COLLECTION_PATH = '/test',
           EDITOR_COMPONENT_NAME = 'simpla-collection-editor',
@@ -65,6 +82,14 @@
 
       function getRenderedItemsFor(component) {
         return [].slice.call(component.querySelectorAll('.item'));
+      }
+
+      function checkAttributeWasReplaced(element, name, from, to) {
+        var actualValue = element.getAttribute(name),
+            originalValue = element.getAttribute('data-original-'+name);
+            expectedValue = originalValue.replace(from, to);
+
+        expect(actualValue).to.equal(expectedValue);
       }
 
       describe('<simpla-collection>', function() {
@@ -127,14 +152,6 @@
 
         describe('templating', function() {
 
-          function checkAttributeWasReplaced(element, name, from, to) {
-            var actualValue = element.getAttribute(name),
-                originalValue = element.getAttribute('data-original-'+name);
-                expectedValue = originalValue.replace(from, to);
-
-            expect(actualValue).to.equal(expectedValue);
-          }
-
           beforeEach(function() {
             component.items = ITEMS();
           });
@@ -182,6 +199,29 @@
                 customKeyComponent.items[i].id
               );
             });
+          });
+
+          it('replaces keys in nested items', function() {
+            var outerCollection = fixture('nested-templates'),
+                innerCollection,
+                renderedItems;
+
+            outerCollection.items = ITEMS();
+            
+            [].slice.call(outerCollection.children, 1)
+              .forEach(function(collection, j) {
+                var outerId = outerCollection.items[j].id;
+                collection.items = ITEMS();
+                
+                [].slice.call(collection.children, 1)
+                  .forEach(function(item, k) {
+                    var innerId = collection.items[k].id;
+
+                    expect(item.getAttribute('path')).to.equal(
+                      '/test/' + outerId + '/' + innerId
+                    );
+                  });
+              });
           });
         });
 
