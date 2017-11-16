@@ -81,7 +81,9 @@
           ];
 
       function getRenderedItemsFor(component) {
-        return [].slice.call(component.querySelectorAll('.item'));
+        return [].filter.call(component.children, function(child) {
+          return child.localName !== 'template';
+        });
       }
 
       function checkAttributeWasReplaced(element, name, from, to) {
@@ -208,20 +210,18 @@
 
             outerCollection.items = ITEMS();
             
-            [].slice.call(outerCollection.children, 1)
-              .forEach(function(collection, j) {
-                var outerId = outerCollection.items[j].id;
-                collection.items = ITEMS();
-                
-                [].slice.call(collection.children, 1)
-                  .forEach(function(item, k) {
-                    var innerId = collection.items[k].id;
+            getRenderedItemsFor(outerCollection).forEach(function(collection, j) {
+              var outerId = outerCollection.items[j].id;
+              collection.items = ITEMS();
+              
+              getRenderedItemsFor(collection).forEach(function(item, k) {
+                var innerId = collection.items[k].id;
 
-                    expect(item.getAttribute('path')).to.equal(
-                      '/test/' + outerId + '/' + innerId
-                    );
-                  });
+                expect(item.getAttribute('path')).to.equal(
+                  '/test/' + outerId + '/' + innerId
+                );
               });
+            });
           });
         });
 
