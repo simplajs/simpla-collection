@@ -5386,7 +5386,11 @@ ternary-stream@^2.0.1:
 
 test-fixture@PolymerElements/test-fixture:
   version "3.0.0-rc.1"
+<<<<<<< Updated upstream
   resolved "https://codeload.github.com/PolymerElements/test-fixture/tar.gz/26118ef0467501c33c02316e7016a2837baba10f"
+=======
+  resolved "https://codeload.github.com/PolymerElements/test-fixture/tar.gz/05caebd9ecbb464024455923bd351d2ba640932e"
+>>>>>>> Stashed changes
 
 text-table@~0.2.0:
   version "0.2.0"

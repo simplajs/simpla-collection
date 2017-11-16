@@ -91,25 +91,37 @@
         let dom = Polymer.dom(this),
             template = dom.querySelector('template'),
             key = `[${this.as}]`,
+            toFragmentTransform,
             toFragment;
 
-        toFragment = item => {
-          let fragment = document.importNode(template.content, true);
-
-          MAGIC_ATTRS.forEach(attr => {
-            let transformNode = node => {
-              let value = node.getAttribute(attr);
-              node.setAttribute(attr, value.replace(key, item.id));
-            };
-
+        toFragmentTransform = id => attr => {
+          let replaceOnNode = node => {
+            let value = node.getAttribute(attr);
+            node.setAttribute(attr, value.replace(key, id));
+          };
+          
+          return function replaceInFragment(fragment) {
+            let elementsWithAttr = fragment.querySelectorAll(`[${attr}]`),
+                templates = fragment.querySelectorAll('template');
+          
+            [].forEach.call(elementsWithAttr, replaceOnNode);
             [].forEach.call(
-              fragment.querySelectorAll(`[${attr}]`),
-              transformNode
+              [].map.call(templates, template => template.content),
+              replaceInFragment
             );
-          });
 
-          return fragment;
+            return fragment;
+          }
         };
+
+        toFragment = item => {
+          return MAGIC_ATTRS
+            .map(toFragmentTransform(item.id))
+            .reduce(
+              (fragment, transform) => transform(fragment),
+              document.importNode(template.content, true)
+            );
+        }
 
         // TODO: This is naïve. Ideally we should preserve as much DOM as possible
         dom.children
