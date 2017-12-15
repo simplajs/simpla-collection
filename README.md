@@ -1,5 +1,5 @@
 # Simpla Collection
-[![Build status][travis-badge]][travis-url] ![Size][size-badge] ![Version][bower-badge] [![Published][webcomponents-badge]][webcomponents-url] [![Simpla slack group][slack-badge]][slack-url]
+[![Build status][travis-badge]][travis-url] ![Size][size-badge] ![Version][bower-badge] [![Published][webcomponents-badge]][webcomponents-url]
 
 Simpla-collection lets you create dynamic collections of content in HTML. It consumes a HTML template, which users can add, remove, and reorder instances of inline on your page. It's built on the [Simpla][simpla] content system.
 
@@ -189,21 +189,17 @@ If you find any issues with simpla-collection please report them! If you'd like 
 MIT © [Simpla][simpla]
 
 [simpla]: https://www.simpla.io
-[simpla-setup]: https://www.simpla.io/docs/guides/get-started
+[simpla-setup]: https://docs.simpla.io/guides/get-started.html
 
-[api]: https://www.webcomponents.org/element/SimplaElements/simpla-collection/page/API.md
-[demo]: https://www.webcomponents.org/element/SimplaElements/simpla-collection/demo/demo/index.html
-[license]: https://github.com/SimplaElements/simpla-collection/blob/master/LICENSE
+[api]: https://www.webcomponents.org/element/simplaio/simpla-collection/page/API.md
+[demo]: https://www.webcomponents.org/element/simplaio/simpla-collection/demo/demo/index.html
+[license]: https://github.com/simplaio/simpla-collection/blob/master/LICENSE
 
 [bower-badge]: https://img.shields.io/bower/v/simpla-collection.svg
 [bowerlicense-badge]: https://img.shields.io/bower/l/simpla-collection.svg
-[travis-badge]: https://img.shields.io/travis/SimplaElements/simpla-collection.svg
-[travis-url]: https://travis-ci.org/SimplaElements/simpla-collection
-[bowerdeps-badge]: https://img.shields.io/gemnasium/SimplaElements/simpla-collection.svg
-[bowerdeps-url]: https://gemnasium.com/bower/simpla-collection
-[size-badge]: http://img.badgesize.io/SimplaElements/simpla-collection/master/simpla-collection.html?compression=gzip&label=render_bundle_%28gzip%29
+[travis-badge]: https://img.shields.io/travis/simplaio/simpla-collection.svg
+[travis-url]: https://travis-ci.org/simplaio/simpla-collection
+[size-badge]: http://img.badgesize.io/simplaio/simpla-collection/master/simpla-collection.html?compression=gzip&label=render_bundle_%28gzip%29
 [webcomponents-badge]: https://img.shields.io/badge/webcomponents.org-published-blue.svg
-[webcomponents-url]: https://www.webcomponents.org/element/SimplaElements/simpla-collection
-[slack-badge]: http://slack.simpla.io/badge.svg
-[slack-url]: https://slack.simpla.io
+[webcomponents-url]: https://www.webcomponents.org/element/simplaio/simpla-collection
 
